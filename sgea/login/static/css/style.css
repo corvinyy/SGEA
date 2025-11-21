@@ -1060,19 +1060,21 @@ evento-imagem,
 
 
 /* --------> Emissão de certificados */
+
+
 .emissao-certi-container {
     max-width: 1000px;
 
-    padding: 20px 40px;
     margin: 40px auto;
     margin-top: 100px;
+    padding: 20px 40px;
 
     background-color: var(--organizador-color);
 
-    border: 10px solid var(--tertiary-color);
     border-radius: 7px;
+    border: 8px solid var(--tertiary-color);
     
-    box-shadow: 0 4px 15px black;
+    box-shadow: 0 5px 10px black;
 }
 
 .emissao-certi-titulo {
@@ -1090,36 +1092,9 @@ evento-imagem,
 
 .emissao-certi-quadro {
     padding: 15px;
-
     border-radius: 10px;
-}
-
-.eventos-lista {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-
-    gap: 20px;
-}
-
-.eventos-itens {
-    padding: 15px;
-
-    background-color: white;
     
-    border-radius: 10px;
 }
-
-.eventos-itens h3 {
-    margin-bottom: 10px;
-
-    text-align: center;
-    font-size: 20px;
-}
-
-.eventos-itens p {
-    margin: 5px 0;
-}
-
 .botao-ctf {
     display: flex;
     justify-content: center;
@@ -1128,6 +1103,8 @@ evento-imagem,
 .botao-emissao-ctf {
     margin-top: 10px;
     padding: 10px 20px;
+
+    width: 200px;
 
     background-color: var(--botao-emerg-color);
     color: white;
@@ -1181,7 +1158,7 @@ evento-imagem,
 
 .todos-eventos-tabela th {
     background-color: var(--organizador-color);
-    color: #fff;
+    color: white;
     padding: 15px 10px;
     text-align: center;
     font-weight: 600;
@@ -1299,25 +1276,21 @@ evento-imagem,
 
 /* --------> Tabela de todos os usuários */
 .todos-usuarios-container {
-    width: 1100px;
-
-    margin: 40px auto;
-    margin-top: 100px;
-    padding: 30px 40px;
-
-    background-color: #fff;
-    
-    border: 10px solid var(--tertiary-color);
-    border-radius: 7px;
-    
-    box-shadow: 0 4px 15px black;
+    width: 90%;
+    max-width: 1300px;
+    margin: 60px auto;
+    padding: 25px 35px;
+    background-color: white;
+    border: 8px solid var(--tertiary-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    overflow-x: auto;
 }
 
+
 .tabela-usuarios-titulo {
-    margin-bottom: 30px;
-
+    margin-bottom: 25px;
     color: var(--tertiary-color);
-
     text-align: center;
 }
 
@@ -1327,26 +1300,25 @@ evento-imagem,
 }
 
 .todos-usuarios-tabela {
+    width: 100%;
     border-collapse: collapse;
+    font-size: 15px;
+    min-width: 900px;
 }
 
 .todos-usuarios-tabela th {
-    padding: 20px 15px;
-
     background-color: var(--organizador-color);
-    color: #ffffff;
-    
+    color: white;
+    padding: 15px 10px;
     text-align: center;
-    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .todos-usuarios-tabela td {
-    padding: 14px 15px;
-
+    padding: 10px 8px;
     border-bottom: 1.5px solid var(--organizador-color);
-
     text-align: center;
-    font-size: 14px;
 }
 
 .todos-usuarios-tabela tr:hover {
@@ -1355,17 +1327,14 @@ evento-imagem,
 
 .todos-usuarios-tabela a.botao-tabela-usuarios {
     display: inline-block;
-
-    padding: 8px 15px;
+    padding: 8px 14px;
     margin: 5px;
-
     border-radius: 4px;
-    color: #ffffff;
-
+    color: white;
+    background-color: var(--botao-preto-color);
     text-decoration: none;
     font-size: 14px;
-
-    transition: background-color 0.3s ease;
+    transition: 0.3s ease;
 }
 
 .todos-usuarios-tabela a.botao-tabela-usuarios {
@@ -1489,22 +1458,25 @@ evento-imagem,
 /* --------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------- */
 
-/* --------> Botões do organizador */
 .botoes-organizador {
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
-    
+
     max-width: 1100px;
     width: 95%;
 
     margin: 50px auto 0 auto;
     padding: 20px 40px;
+
+    gap: 20px; 
 }
 
 .botao-organizador a {
+    flex: 1; 
+    text-align: center;
+
     display: inline-block;
-    min-width: 150px;
     padding: 13px 25px;
 
     color: white;
@@ -1513,7 +1485,6 @@ evento-imagem,
     border: none;
     border-radius: 8px;
 
-    text-align: center;
     text-decoration: none;
     font-weight: 600;
     font-size: 20px;
@@ -1580,28 +1551,20 @@ evento-imagem,
     }
 
 
-    /* Login de usuários */
+    /* Botoes do organizador */
     .botoes-organizador {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-        width: 90%;
-
-        padding: 10px;
-        margin-top: 30px;
-        gap: 10px;
+        flex-direction: column; 
+        padding: 10px 20px;
+        gap: 15px;
     }
 
     .botao-organizador a {
-        width: 100%;
-        max-width: 250px;
-
-        padding: 12px 15px;
-
+        width: 100%;  
         font-size: 18px;
+        padding: 12px 20px;
     }
-
+    
+    /* Login de usuários */
     .login-container {
         width: 90%;
         padding: 30px 20px;
@@ -1834,6 +1797,42 @@ evento-imagem,
     .fechar-modal-evento {
         font-size: 22px;
     }
+
+    /* TELA DE EMISSAO */
+    .emissao-certi-container {
+        max-width: 95%;
+
+        margin: 20px auto;
+        padding: 15px;
+
+        border-width: 6px;
+    }
+
+    
+    /* TABELA DE USUARIOS*/
+    .todos-usuarios-container {
+        padding: 15px 10px;
+        width: 95%;
+    }
+
+    .tabela-usuarios-titulo h1 {
+        font-size: 24px;
+    }
+
+    .todos-usuarios-tabela {
+        font-size: 13px;
+        min-width: 600px; 
+    }
+
+    .todos-usuarios-tabela th,
+    .todos-usuarios-tabela td {
+        padding: 8px 6px;
+    }
+
+    .todos-usuarios-tabela a.botao-tabela-usuarios {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1886,21 +1885,18 @@ evento-imagem,
     }
 
 
-    /* Login */
+    /* Botoes organizador*/
     .botoes-organizador {
-        justify-content: flex-start;
-
-        width: 90%;
-
-        padding: 20px 40px;
-        gap: 30px;
+        padding: 25px 30px;
+        gap: 25px;
     }
 
     .botao-organizador a {
         font-size: 19px;
-        padding: 13px 25px;
+        padding: 14px 22px;
     }
 
+    /* Login */
     .login-container {
         width: 70%;
         max-width: 550px;
@@ -2086,6 +2082,30 @@ evento-imagem,
     .botao-modal-evento {
         padding: 9px 14px;
         font-size: 13px;
+    }
+
+
+    /* TABELA DE USUARIOS*/
+     .todos-usuarios-container {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .tabela-usuarios-titulo h1 {
+        font-size: 28px;
+    }
+
+    .todos-usuarios-tabela {
+        font-size: 14px;
+    }
+
+    .todos-usuarios-tabela th,
+    .todos-usuarios-tabela td {
+        padding: 10px 8px;
+    }
+
+    .todos-usuarios-tabela a.botao-tabela-usuarios {
+        padding: 6px 12px;
     }
 }
 
@@ -2280,5 +2300,28 @@ evento-imagem,
     .botao-modal-evento {
         padding: 10px 16px;
         font-size: 14px;
+    }
+
+
+    /* TABELA DE USUARIOS*/
+    .todos-usuarios-container {
+        width: 85%;
+        padding: 30px;
+    }
+
+    .tabela-usuarios-titulo h1 {
+        font-size: 32px;
+    }
+
+    .todos-usuarios-tabela {
+        font-size: 15px;
+    }
+
+    .todos-usuarios-tabela th {
+        padding: 16px 12px;
+    }
+
+    .todos-usuarios-tabela td {
+        padding: 12px 10px;
     }
 }
