@@ -41,10 +41,16 @@
           {% for evento in eventos %}
             <div class="eventos-itens">
               <h3>{{ evento.nome }} - {{ evento.tipoevento }}</h3>
+
+              {% if evento.imagem %}
+                <img src="{{evento.imagem.url}}" alt="Imagem de {{evento.nome}}" style="max-width:100%; border-radius:5px; margin-top:10px;">
+              {% else %}
+                <div>
+                  <i>imagem não disponível</i>
+                </div>
+              {% endif %}
               <p><strong>Local:</strong> {{ evento.local }}</p> 
               <p><strong>Data:</strong> {{ evento.dataI }} até {{ evento.dataF }}</p> 
-              <p><strong>Horário:</strong> {{ evento.horarioI }}h às {{ evento.horarioF }}h</p> 
-              <p><strong>Vagas disponíveis:</strong> {{ evento.vagas }}</p>  
 
               <form method="post" action="{% url 'emitir_certificados' evento.id_evento %}">
                 {% csrf_token %}
