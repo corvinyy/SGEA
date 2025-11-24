@@ -1,19 +1,32 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from .managers import UsuarioManager 
 
-# Create your models here.
-class Usuario(models.Model):
-    id_usuario = models.AutoField(primary_key = True, unique = True)
-    nome = models.TextField(max_length= 255, null = False)
-    sobrenome = models.TextField(max_length = 255, null = False)
-    senha = models.TextField(max_length = 255, null = False)
-    confirmar_senha = models.TextField(max_length = 255, null = True)
-    telefone = models.CharField(max_length = 13, unique = True, null = False)
-    email = models.CharField(max_length = 255, unique = True, null = False)
-    instituicao = models.CharField(max_length = 50, null = False)
-    tipo = models.CharField(max_length = 50, choices = [("estudante","Estudante"), ("professor","Professor"), ("organizador","Organizador")], default = "estudante") 
-    codigo = models.CharField(max_length = 6, null = True)
+class Usuario(AbstractBaseUser, PermissionsMixin):
+    # Campos obrigatórios pelo AbstractBaseUser
+    # ID e senha são gerenciados pelo login do Django
+    
+    email = models.EmailField(max_length=255, unique=True) 
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    id_usuario = models.AutoField(primary_key=True, unique=True)
+    nome = models.CharField(max_length=255, null=False) 
+    sobrenome = models.CharField(max_length=255, null=False) 
+    telefone = models.CharField(max_length=13, unique=True, null=False)
+    instituicao = models.CharField(max_length=50, null=False)
+    tipo = models.CharField(max_length=50, choices=[("estudante", "Estudante"), ("professor", "Professor"), ("organizador", "Organizador")], default="estudante")
+    codigo = models.CharField(max_length=6, null=True, blank=True)
+    
+    # Definições de autenticação
+    objects = UsuarioManager() 
+    USERNAME_FIELD = 'email'  
+    REQUIRED_FIELDS = ['nome', 'sobrenome', 'telefone', 'instituicao', 'tipo'] 
 
+    class Meta:
+        verbose_name = 'Usuário'
+        verbose_name_plural = 'Usuários'
+        
 class Evento(models.Model):
     id_evento = models.AutoField(primary_key = True)
     nome = models.TextField(max_length = 255, null = True)

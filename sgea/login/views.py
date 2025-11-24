@@ -1,19 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from .models import *
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from datetime import date, datetime
 from decimal import Decimal
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 import random
+from .serializers import *
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication, authenticate
+from rest_framework.authtoken.views import ObtainAuthToken
 
 # Create your views here.
 def home(request):
@@ -134,7 +136,10 @@ def cadastro_usuarios(request):
             codigo += let
        
         # Caso todas as informações sejam inseridas corretamente, um novo usuário é criado 
-        novo_usuario = Usuario.objects.create(nome = nome, sobrenome = sobrenome, senha = senha, telefone = telefone_arrumado, email = email, instituicao = instituicao, tipo = tipo_usuario, codigo = codigo)
+        novo_usuario = Usuario.objects.create(nome = nome, sobrenome = sobrenome, telefone = telefone_arrumado, email = email, instituicao = instituicao, tipo = tipo_usuario, codigo = codigo)
+        novo_usuario.set_password(senha)
+        novo_usuario.save()
+
 
         emailhtml = render_to_string('usuarios/confirmacao_cadastro.html', {"usuario" : novo_usuario, "codigo" : codigo})
         try:
@@ -179,24 +184,32 @@ def ver_usuarios(request):
 def loginU(request):
     if request.method == "POST":
         email = request.POST.get("email")
-        inputS = request.POST.get("senha")
+        inputS = request.POST.get("senha") 
 
         if not email or not inputS:
             return HttpResponse("Insira um email e uma senha.")
-        try:
-            # O usuário pode escolher entrar com a senha criada anteriormente ou com o código disponibilizado pelo email
-            user = Usuario.objects.get(Q(senha=inputS) | Q(codigo=inputS), email=email)
-    
-            if user:
-                request.session["usuario_id"] = user.id_usuario
-                return redirect("inscricao")
 
-            else:
-                return HttpResponse("Usuário ou senha incorretos.")
+        user = authenticate(request, username=email, password=inputS) 
+        
+        if user is None:
+            try:
+                user = Usuario.objects.get(email=email, codigo=inputS)
+            except Usuario.DoesNotExist:
+                user = None 
 
-        except Usuario.DoesNotExist:
-            return HttpResponse("Usuário não encontrado")
-
+        if user is not None:
+            
+            # Login do usuário pelo Django
+            login(request, user) 
+            request.session["usuario_id"] = user.id_usuario
+            return redirect("inscricao") 
+        else:
+            try:
+                Usuario.objects.get(email=email)
+                return HttpResponse("Usuário ou senha incorretos.") 
+            except Usuario.DoesNotExist:
+                return HttpResponse("Usuário não encontrado") 
+        
     return render(request, "usuarios/login.html")
 
 def editar_usuario(request):
@@ -215,20 +228,21 @@ def editar_usuario(request):
         if Usuario.objects.filter(telefone = telefone).exclude(id_usuario = usuario_id).exists():
             return HttpResponse("Este telefone já está cadastrado por outro usuário")
         
-        validator = RegexValidator(regex = r'^\d{13}$', message = "O número de telefone deve ser inserido no formato: '9999999999999'.")
+        tamanho = len(telefone)
         
-        try:
-            validator(telefone)
-        
-        except ValidationError:
+        if tamanho == 11:
+            pass
+        else:
             return HttpResponse("O número deve ser inserido no seguinte formato: '9999999999999'.")
         
         Registro.objects.create(usuario_id = usuario_id, acao = "Edição de perfil")
         
+        telefone_arrumado = (f"({telefone[0:2]}) {telefone[2:7]}-{telefone[7:11]}")
+        
         # Caso as informações sejam inseridas corretamente, as mudanças são salvas
         usuario.nome = nome
-        usuario.senha = senha
-        usuario.telefone = telefone
+        usuario.set_password(senha)
+        usuario.telefone = telefone_arrumado
         usuario.save()
     
         return redirect("inscricao")
@@ -653,7 +667,7 @@ def meus_certificados(request):
 #Deslogar---------------------------------------------------------------------------------------------------------
 
 def logout(request):
-    # Verifica se há um id de usuário armazenado na sessão, se houver, o deletar e redireciona o usuário para a tela de login
+    # Verifica se há um id de usuário armazenado na sessão, se houver, o deleta e redireciona o usuário para a tela de login
     if "usuario_id" in request.session:
         del request.session["usuario_id"]
     
@@ -669,8 +683,30 @@ def registros(request):
     if not usuario_id:
         return redirect("login")
     
+    # Adquire todos os registros e os organiza pela hora, de forma decrescente
     registros = {
-        'registros' : Registro.objects.all()
+        'registros' : Registro.objects.all().order_by("-hora")
     }
     
     return render(request, "usuarios/registros.html", registros)
+
+#API---------------------------------------------------------------------------------------------------------
+
+class CustomObtainAuthToken(ObtainAuthToken):
+    serializer_class = CustomAuthTokenSerializer
+    
+class VerEventos(viewsets.ModelViewSet):
+    queryset = Evento.objects.all()
+    serializer_class = EventoSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        self.registro(request)  
+        return super().list(request, *args, **kwargs)
+
+    def registro(self, request):
+        usuario = request.user
+
+        if usuario.is_authenticated:
+            Registro.objects.create(usuario_id=str(usuario.id_usuario), acao="Visualização de eventos pela API")
