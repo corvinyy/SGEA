@@ -148,8 +148,8 @@ def cadastro_usuarios(request):
             email.content_subtype = 'html'
             email.send()
         
-        except Exception as e:
-            print("Erro ao enviar confirmação pelo email: "+e)
+        except Exception:
+            print("Erro ao enviar confirmação pelo email")
         
         Registro.objects.create(usuario_id = novo_usuario.id_usuario, acao = "Cadastro de usuário" )
 
@@ -695,10 +695,11 @@ def registros(request):
 class CustomObtainAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
     
+    
 class VerEventos(viewsets.ModelViewSet):
     queryset = Evento.objects.all()
     serializer_class = EventoSerializer
-    authentication_classes = [TokenAuthentication]
+ 
     permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):

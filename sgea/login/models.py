@@ -5,12 +5,12 @@ from .managers import UsuarioManager
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     # Campos obrigatórios pelo AbstractBaseUser
-    # ID e senha são gerenciados pelo login do Django
-    
-    email = models.EmailField(max_length=255, unique=True) 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     id_usuario = models.AutoField(primary_key=True, unique=True)
+    
+    # ID e senha são gerenciados pelo login do Django
+    email = models.EmailField(max_length=255, unique=True) 
     nome = models.CharField(max_length=255, null=False) 
     sobrenome = models.CharField(max_length=255, null=False) 
     telefone = models.CharField(max_length=13, unique=True, null=False)

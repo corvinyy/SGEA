@@ -17,14 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from login import views
-from login.views import VerUsuarios, VerEventos 
+from login.views import VerEventos 
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView    
+
  
 router = routers.DefaultRouter()
-router.register('ver_usuarios', views.VerUsuarios, basename = "Usuarios")
 router.register('ver_eventos', views.VerEventos, basename = 'Eventos')
 
 
@@ -69,7 +70,8 @@ urlpatterns = [
     # API------------------------------------------------------------------------------------------------------------
     path('usuarioss/', include(router.urls)),
     path('eventoss/', include(router.urls)),
-    path('token/', obtain_auth_token, name='api_token_auth'),
+    path('token/', TokenObtainPairView.as_view(), name='api_token_auth'),
+    path('token_refresh/', TokenRefreshView.as_view(), name='api_token_refresh'),
 ]
 
 if settings.DEBUG:
