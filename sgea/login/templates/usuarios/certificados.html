@@ -5,6 +5,14 @@
 
 {% block content %} 
 
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 <section class="botoes-organizador">
   <div class="botao-organizador">
     <a href="{% url 'inscricao' %}">
@@ -29,8 +37,16 @@
       Visualizar usuários
     </a>
   </div>
-</section>
 
+  <div class="botao-organizador">
+      <form method="post" action="{% url 'emitir_certificados' %}"> 
+          {% csrf_token %}
+          <button type="submit" class="botao-emissao-ctf">
+              Emitir certificados (eventos finalizados)
+          </button>
+      </form>
+  </div>
+</section>
 <div class="emissao-certi-container">
     <div class="emissao-certi-titulo">
         <h1>Emissão de certificados</h1>
@@ -52,10 +68,8 @@
               <p><strong>Local:</strong> {{ evento.local }}</p> 
               <p><strong>Data:</strong> {{ evento.dataI }} até {{ evento.dataF }}</p> 
 
-              <form method="post" action="{% url 'emitir_certificados' evento.id_evento %}">
-                {% csrf_token %}
                 <div class="botao-ctf"> 
-                  <button type="submit" class="botao-emissao-ctf">Emitir certificados</button>
+                  <a href="{% url 'editar_evento' pk=evento.pk %}" class="botao-emissao-ctf">Editar evento</a>
                 </div>
               </form>
             

@@ -1,19 +1,3 @@
-"""
-URL configuration for sgea project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path,include
 from login import views
@@ -58,7 +42,7 @@ urlpatterns = [
     path("home_inscricao/", views.home_inscricao, name = "inscricao"),
 
     #Operações com certificados
-    path("emitir_certificados/<int:evento_id>/", views.emitir_certificados, name = "emitir_certificados"),
+    path("emitir_certificados/", views.emitir_certificados, name = "emitir_certificados"),
     path("certificados/", views.ver_certificados, name = "ver_certs"),
     
     #Finalizar sessão (logout)
@@ -68,7 +52,6 @@ urlpatterns = [
     path("registros/", views.registros, name = "registro"),
     
     # API------------------------------------------------------------------------------------------------------------
-    path('usuarioss/', include(router.urls)),
     path('eventoss/', include(router.urls)),
     path('token/', TokenObtainPairView.as_view(), name='api_token_auth'),
     path('token_refresh/', TokenRefreshView.as_view(), name='api_token_refresh'),

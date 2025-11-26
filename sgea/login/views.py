@@ -88,7 +88,7 @@ def cadastro_usuarios(request):
             return redirect("cadastro")
 
         if len(senha) >= 8:
-            carac_especial = "@#$%^&*()-+?_=,<>/\|."
+            carac_especial = "@#$!%^&*()-+?_=,<>/\|."
             numeros = "0123456789"
             if any(c in carac_especial for c in senha):
                 if any(c in numeros for c in senha):
@@ -292,12 +292,12 @@ def eventos(request):
         except ValueError:
             return HttpResponse("Formatação da data inválido, use: 'dia-mes-ano'.")
  
-        data_hj = timezone.now().date()
+        #data_hj = timezone.now().date()
  
         if dia_fim < dia_inicio:
             return HttpResponse("A data final não pode ser anterior a data inicial.")
 
-        if dia_inicio < data_hj:
+        #if dia_inicio < data_hj:
             return HttpResponse("A data de início não pode ser anterior à data atual.")
 
         # Validação das informações adquiridas no campo dos horários
@@ -627,30 +627,40 @@ def ver_certificados(request):
     
     return render(request, "usuarios/certificados.html", eventos)
 
-def emitir_certificados(request, evento_id):
-    with transaction.atomic():
-        try:
-            evento = get_object_or_404(Evento, pk = evento_id)
+def emitir_certificados(request):
+    if request.method == 'POST':
+        hoje = datetime.now()
+        evento = Evento.objects.filter(emitido = False, dataF__lt = hoje)
+        
+        if not evento.exists():
+            messages.info(request, "Nenhum evento elegível para emissão de certificados.")
+            return redirect('ver_certs')
+        
+        for ev in evento:
+            try:
+                with transaction.atomic():
+                    inscricoes = Inscrito.objects.filter(evento_id = ev.pk)
 
-            inscricoes = Inscrito.objects.filter(evento_id = evento.pk)
-
-            if not inscricoes.exists():
-                return HttpResponse("Não há inscritos para este evento.")
-            
-            for inscricao in inscricoes:
-                nova_emissao = Certificado.objects.create(usuario_id = inscricao.usuario_id, evento_id = inscricao.evento_id, assinatura = inscricao.evento_id.assinatura, horas = inscricao.evento_id.horas_e_minutos)
-            
-            Inscrito.objects.filter(evento_id = evento.pk).delete()        
-            
-            Registro.objects.create(usuario_id = nova_emissao.usuario_id.id_usuario, evento_id = nova_emissao.evento_id.id_evento, acao = "Emissão de certificado" )
-            
-            evento.emitido = True
-            evento.save()
-            
-        except Exception as e:
-            return HttpResponse(f"Erro na emissão de certificados: {e}")
-            
-    return redirect("/certificados/")
+                    if not inscricoes.exists():
+                        ev.emitido = True
+                        ev.save()
+                        messages.warning(request, f"AVISO: Evento: {ev.nome} finalizado (sem inscrições).")
+                        continue
+                    
+                    for inscricao in inscricoes:
+                        nova_emissao = Certificado.objects.create(usuario_id = inscricao.usuario_id, evento_id = inscricao.evento_id, assinatura = inscricao.evento_id.assinatura, horas = inscricao.evento_id.horas_e_minutos)
+                    
+                    Inscrito.objects.filter(evento_id = evento.pk).delete()        
+                    
+                    Registro.objects.create(usuario_id = nova_emissao.usuario_id.id_usuario, evento_id = nova_emissao.evento_id.id_evento, acao = "Emissão de certificado" )
+                    
+                    evento.emitido = True
+                    evento.save()
+                    
+            except Exception as e:
+                return HttpResponse(f"Erro na emissão de certificados: {e}")
+                
+    return redirect("ver_certs")
 
 def meus_certificados(request):
     usuario_id = request.session.get("usuario_id")
@@ -695,7 +705,6 @@ def registros(request):
 class CustomObtainAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
     
-    
 class VerEventos(viewsets.ModelViewSet):
     queryset = Evento.objects.all()
     serializer_class = EventoSerializer
@@ -711,3 +720,6 @@ class VerEventos(viewsets.ModelViewSet):
 
         if usuario.is_authenticated:
             Registro.objects.create(usuario_id=str(usuario.id_usuario), acao="Visualização de eventos pela API")
+    
+class InscricaoAPI(viewsets.ModelViewSet):
+    pass
