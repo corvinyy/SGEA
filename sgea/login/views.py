@@ -12,10 +12,13 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 import random
 from .serializers import *
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.authentication import BasicAuthentication, TokenAuthentication, authenticate
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.authtoken.views import ObtainAuthToken
+
 
 # Create your views here.
 def home(request):
@@ -709,7 +712,7 @@ class VerEventos(viewsets.ModelViewSet):
     queryset = Evento.objects.all()
     serializer_class = EventoSerializer
  
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def list(self, request, *args, **kwargs):
         self.registro(request)  
@@ -721,5 +724,35 @@ class VerEventos(viewsets.ModelViewSet):
         if usuario.is_authenticated:
             Registro.objects.create(usuario_id=str(usuario.id_usuario), acao="Visualização de eventos pela API")
     
-class InscricaoAPI(viewsets.ModelViewSet):
-    pass
+class InscricaoAPI(CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Inscrito.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = InscricaoAPISerializer
+    
+    def create(self, request, *args, **kwargs):
+        usuario = request.user
+        
+        seri = InscricaoAPISerializer(data = request.data)
+        
+        if seri.is_valid():
+            evento_id_api = seri.validated_data['id_evento']
+            
+            try:
+                evento = Evento.objects.get(pk = evento_id_api)
+                if Inscrito.objects.filter(usuario_id = usuario, evento_id = evento).exists():
+                    print(evento.id_evento)
+                    return Response({"detail" : "O usuário já está inscrito no evento."}, 
+                                    status = status.HTTP_400_BAD_REQUEST)
+            
+                evento.vagas -= 1
+                Registro.objects.create(usuario_id = usuario.id_usuario, evento_id = evento.id_evento, acao = "Inscrição em evento pela API")
+                Inscrito.objects.create(usuario_id = usuario, evento_id = evento)
+                
+                return Response({"detail" : f"Usuário inscrito com sucesso no seguinte evento: {evento.nome}"},
+                                status = status.HTTP_201_CREATED)
+                
+            except Evento.DoesNotExist:
+                return Response({"detail" : f"O evento com o ID {evento.id_evento} específicado não existe"},
+                                status = status.HTTP_404_NOT_FOUND)
+                
+        return Response(seri.errors, status = status.HTTP_400_BAD_REQUEST)

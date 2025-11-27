@@ -52,3 +52,6 @@ class EventoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evento
         fields = '__all__'
+        
+class InscricaoAPISerializer(serializers.Serializer):
+    id_evento = serializers.IntegerField()

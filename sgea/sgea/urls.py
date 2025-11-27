@@ -1,17 +1,15 @@
 from django.contrib import admin
 from django.urls import path,include
 from login import views
-from login.views import VerEventos 
+from login.views import InscricaoAPI
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework import routers
-from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView    
-
  
 router = routers.DefaultRouter()
 router.register('ver_eventos', views.VerEventos, basename = 'Eventos')
-
+router.register('inscricao_api', views.InscricaoAPI, basename = 'InscricaoAPI')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -52,7 +50,7 @@ urlpatterns = [
     path("registros/", views.registros, name = "registro"),
     
     # API------------------------------------------------------------------------------------------------------------
-    path('eventoss/', include(router.urls)),
+    path('api/', include(router.urls)),
     path('token/', TokenObtainPairView.as_view(), name='api_token_auth'),
     path('token_refresh/', TokenRefreshView.as_view(), name='api_token_refresh'),
 ]
