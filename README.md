@@ -19,11 +19,11 @@ Permite o cadastro e autenticação de usuários, criação e inscrição em eve
 ![Preview of the current progress](./sgea/login/static/assets/imgs/PreviewNOVA2.png)
 
 
-## 🛠️ Status
+### 🛠️ Status
 
 ⚙️ Em progresso
 
-## ✨ Funcionalidades
+### ✨ Funcionalidades
 
 - 👥 Cadastro e autenticação de usuários (alunos, professores, organizadores)
 - 🗓️ Criação e gerenciamento de eventos (informações como tipo de evento, data, horário, quantidade de participantes)
@@ -36,64 +36,108 @@ Permite o cadastro e autenticação de usuários, criação e inscrição em eve
 ### 🛠️ Ferramentas e Tecnologias
 
 
-<img 
-    align="left" 
-    alt="Python" 
-    title="Python"
-    width="30px" 
-    style="padding-right: 10px;" 
-    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" 
-/>
-<img 
-    align="left" 
-    alt="DJango" 
-    title="Django"
-    width="30px" 
-    style="padding-right: 10px;" 
-    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/django/django-plain.svg"  
-/>
-<img 
-    align="left" 
-    alt="HTML"
-    title="HTML" 
-    width="30px" 
-    style="padding-right: 10px;" 
-    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" 
-/>
-<img 
-    align="left" 
-    alt="CSS" 
-    title="CSS"
-    width="30px" 
-    style="padding-right: 10px;" 
-    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" 
-/>
-<img 
-    align="left" 
-    alt="JavaScript" 
-    title="JavaScript"
-    width="30px" 
-    style="padding-right: 10px;" 
-    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" 
-/>
-<img 
-    align="left" 
-    alt="vscode" 
-    title="Visual Studio Code"
-    width="30px" 
-    style="padding-right: 10px;" 
-    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" 
-/>
-<img 
-    align="left" 
-    alt="github" 
-    title="GitHub"
-    width="30px" 
-    style="padding-right: 10px;" 
-    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" 
-/>
+[![Tech](https://skillicons.dev/icons?i=python,django,sqlite,js,html,css)](https://skillicons.dev)
 
-<br></br>
+[![Tools](https://skillicons.dev/icons?i=vscode,github)](https://skillicons.dev)
+
+
+---
+
+### 📁 Estrutura do Projeto
+```bash
+SGEA---Casa-de-Atena/ # repositório 
+│
+├── sgea/ # pasta onde vai rodar o site localmente
+│   │
+│   ├── login/ 
+│   │   ├── static/ # arquivos estáticos (CSS, JS, imagens)
+│   │   ├── templates/ #pasta com as páginas do site
+│   │   │   └── (arquivos.html) 
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── managers.py  # managers personalizados 
+│   │   ├── models.py # modelos/tabelas do app
+│   │   ├── serializers.py
+│   │   ├── tests.py
+│   │   └── views.py  # lógica das rotas (renderização, API, etc)
+│   │
+│   ├── sgea/
+│   │   ├── asgi.py
+│   │   ├── settings.py # configurações globais do Django (apps, DB, static, etc)
+│   │   ├── urls.py # roteamento principal do projeto
+│   │   └── wsgi.py
+│   │
+│   ├── db.sqlite3  # banco de dados SQLite
+│   └── manage.py # CLI do django (rodar servidor, criar apps, fazer migrações)
+│
+├── .gitignore  # arquivos e pastas ignorados pelo git
+├── README.md # documentação geral do projeto
+└── Documentação - Casa de Atena.pdf # documento extra detalhada do projeto
+```
+
+---
+
+### 🚀 Como Rodar o Projeto Localmente
+
+**1. Faça o clone do repositório** 
+
+```bash
+git clone https://github.com/okiobot/SGEA---Casa-de-Atena
+```
+
+**2. Acessar a pasta onde está o projeto Django**
+
+```bash
+cd SGEA---Casa-de-Atena 
+cd sgea
+```
+
+**3. Criar e ativar um ambiente virtual (recomendado)**
+
+Windows
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+Linux / macOS
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**4. Instalar o Django e outras dependências**
+```bash
+pip install django
+```
+
+```bash
+pip install -r requirements.txt
+```
+
+```bash
+pip install djangorestframework
+```
+
+```bash
+pip install djangorestframework_simplejwt
+```
+
+**5. Aplicar as migrações do banco de dados**
+```bash
+python manage.py makemigrations
+```
+
+```bash
+python manage.py migrate
+```
+
+**6. Rodar o servidor local**
+```bash
+python manage.py runserver
+```
+
+**📌 O projeto ficará disponível em: http://127.0.0.1:8000/**
 
 ---
 
