@@ -1,7 +1,61 @@
 {% extends 'usuarios/base.html' %}
+{% load static %}
 
-<h1> Página de Sobre</h1>
+{% block title %}Sobre - Casa de Atena{% endblock %}
 
-<a href = "{% url 'inscricao' %}">
-Voltar
-</a>
+{% block content %} 
+
+<section class="sobre">
+    <h2>Quem Somos</h2>
+    <p>
+        A <strong>Casa de Atena</strong> é uma plataforma moderna desenvolvida para simplificar a organização 
+        e gerenciamento de eventos. Desde o cadastro de usuários até a emissão de certificados, 
+        oferecemos ferramentas que tornam todo o processo mais ágil, seguro e profissional.
+    </p>
+
+    <h2>O que Fazemos</h2>
+    <ul>
+        <li>✔ Gestão completa de eventos</li>
+        <li>✔ Cadastro e controle de participantes e usuários</li>
+        <li>✔ Emissão automática de certificados digitais</li>
+        <li>✔ Segurança e armazenamento de dados confiável</li>
+    </ul>
+
+    <h2>Nossa Missão</h2>
+    <p>
+        Facilitar a vida de organizadores e instituições, oferecendo uma solução completa 
+        para administrar eventos com qualidade, eficiência e tecnologia.
+    </p>
+</section>
+
+<section class="motivos">
+    <h2>Por que participar de eventos?</h2>
+
+    <p>
+        Participar de eventos vai muito além de simplesmente marcar presença. 
+        É uma oportunidade de crescimento, aprendizado e conexão com pessoas 
+        que compartilham interesses semelhantes. Confira alguns motivos que 
+        tornam essa experiência tão valiosa:
+    </p>
+
+    <ul>
+        <li><strong>✔ Aprendizado contínuo:</strong> acesso a palestras e workshops que ampliam conhecimentos.</li>
+        <li><strong>✔ Networking valioso:</strong> criação de contatos profissionais que podem abrir novas oportunidades.</li>
+        <li><strong>✔ Inspiração e novas ideias:</strong> ambientes dinâmicos que estimulam a criatividade.</li>
+        <li><strong>✔ Atualização sobre tendências:</strong> compreensão das novidades e inovações do mercado.</li>
+        <li><strong>✔ Reconhecimento e certificação:</strong> diversos eventos oferecem certificados úteis para currículo.</li>
+        <li><strong>✔ Experiências únicas:</strong> cada evento proporciona vivências que enriquecem seu desenvolvimento.</li>
+    </ul>
+
+    <p>
+        Não perca a chance de participar e aproveitar todos esses benefícios!
+        Inscreva-se em nossos eventos e faça parte de uma comunidade engajada e 
+        em constante evolução.
+    </p>
+
+    <div class="sobre-ver-eventos">
+        <a href="{% url 'inscricao' %}"> VER EVENTOS</a>
+    </div>
+</section>
+
+{% endblock %}   

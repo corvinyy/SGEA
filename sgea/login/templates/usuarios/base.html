@@ -19,7 +19,9 @@
         <nav>
             <ul>
                 <li>
-                    <a href="{% url 'sobre' %}" id="nav-sobre">Sobre</a>
+                    <a href="{% url 'sobre' %}" id="nav-sobre"
+                        class="{% if 'sobre' in request.path %}ativo{% endif %}">Sobre
+                    </a>
                 </li>
                 <li>
                     <a href="{% url 'inscricao' %}" id="nav-eventos" 
