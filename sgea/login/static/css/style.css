@@ -864,8 +864,7 @@ nav a.ativo {
 }
 
 .botao-enviar {
-    display: flex;
-    justify-content: center;
+    text-align: center;
     margin-top: 20px;
 }
 
@@ -946,12 +945,12 @@ nav a.ativo {
     text-align: center;
 }
 
-evento-imagem,
+.evento-imagem,
 .eventos-itens > div i {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 215px; 
+    height: 210px; 
     width: 100%;
     background-color: rgb(218, 218, 218); 
     border-radius: 10px;
@@ -968,13 +967,16 @@ evento-imagem,
 
 .eventos-inscricao-btn, .botao-detalhe {
     padding: 10px 20px;
+    max-width: 140px; 
     
     background-color: var(--tertiary-color);
     color: white;
     
     border: none;
+    box-sizing: border-box;
     border-radius: 10px;
     
+    font-size: 13px;
     font-weight: bold;
     cursor: pointer;
 
@@ -988,7 +990,7 @@ evento-imagem,
 }
 
 .evento-imagem img {
-    height: 200px;
+    height: 100%;
 
     width: 100%;
 
@@ -1000,10 +1002,11 @@ evento-imagem,
 
 .evento-botoes {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;  
     align-items: center;
-
+    gap: 15px;                
     margin-top: 10px;
+    
 }
 
 .evento-modal {
@@ -1098,7 +1101,13 @@ evento-imagem,
 .botao-ctf {
     display: flex;
     justify-content: center;
-}         
+    align-items: center;
+    flex-direction: column;
+}      
+
+.botao-ctf a{
+    text-decoration: none;
+}
 
 .botao-emissao-ctf {
     margin-top: 10px;
@@ -1112,6 +1121,7 @@ evento-imagem,
     border: none;
     border-radius: 10px;
 
+    text-align: center;
     font-weight: bold;
     cursor: pointer;
 
@@ -1472,7 +1482,7 @@ evento-imagem,
     gap: 20px; 
 }
 
-.botao-organizador a {
+.botao-organizador a, button {
     flex: 1; 
     text-align: center;
 
@@ -1487,16 +1497,84 @@ evento-imagem,
 
     text-decoration: none;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 15px;
     cursor: pointer;
 
     transform: scale(1);
     transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.botao-organizador a:hover {
+.botao-organizador a:hover,
+.botao-organizador button:hover {
     background-color: var(--botao-emerg-color);
     transform: scale(1.05);
+}
+
+/* --------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------- */
+
+/* --------> Página Sobre nós e Motivos */
+.sobre,
+.motivos {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.sobre h2,
+.motivos h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+.sobre p,
+.motivos p {
+    line-height: 1.6;
+}
+
+.sobre ul,
+.motivos ul {
+    margin-top: 15px;
+    list-style: none;
+}
+
+.sobre ul li,
+.motivos ul li {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+.sobre-ver-eventos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.motivos a {
+    display: inline-block;
+
+    padding: 10px 20px;
+
+    font-weight: bold;
+    text-decoration: none;
+
+    background-color: var(--quaternary-color);
+    color: var(--tertiary-color);
+    border-radius: 10px;
+
+    transform: scale(1);
+    transition: background-color 0.1s ease, transform 1s ease;
+    
+}
+
+.motivos a:hover {
+    background-color: var(--botao-preto-color);
+    color: white;
+    transform: scale(1.1);
+
 }
 
 
@@ -1680,7 +1758,7 @@ evento-imagem,
     }
 
     .evento-imagem img {
-        height: 180px;
+        height: 100%;
     }
 
     .evento-botoes {
@@ -1997,7 +2075,7 @@ evento-imagem,
     }
 
     .evento-imagem img {
-        height: 220px;
+        height: 100%;
     }
 
     .eventos-inscricao-btn,
