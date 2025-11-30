@@ -55,7 +55,9 @@
                     </div>
 
                     {% if evento.imagem %}
-                        <img src="{{evento.imagem.url}}" alt="Imagem de {{evento.nome}}" style="max-width:100%; border-radius:5px; margin-top:10px;">
+                        <div class="evento-imagem">
+                            <img src="{{ evento.imagem.url }}" alt="Imagem do evento {{ evento.nome }}">
+                        </div>
                     {% else %}
                     <div>
                         <i>imagem não disponível</i>

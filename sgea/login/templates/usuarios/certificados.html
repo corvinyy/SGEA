@@ -41,8 +41,8 @@
   <div class="botao-organizador">
       <form method="post" action="{% url 'emitir_certificados' %}"> 
           {% csrf_token %}
-          <button type="submit" class="botao-emissao-ctf">
-              Emitir certificados (eventos finalizados)
+          <button type="submit">
+              Emitir certificados 
           </button>
       </form>
   </div>
@@ -59,7 +59,9 @@
               <h3>{{ evento.nome }} - {{ evento.tipoevento }}</h3>
 
               {% if evento.imagem %}
-                <img src="{{evento.imagem.url}}" alt="Imagem de {{evento.nome}}" style="max-width:100%; border-radius:5px; margin-top:10px;">
+                <div class="evento-imagem">
+                    <img src="{{ evento.imagem.url }}" alt="Imagem do evento {{ evento.nome }}">
+                </div>
               {% else %}
                 <div>
                   <i>imagem não disponível</i>
@@ -68,18 +70,14 @@
               <p><strong>Local:</strong> {{ evento.local }}</p> 
               <p><strong>Data:</strong> {{ evento.dataI }} até {{ evento.dataF }}</p> 
 
-                <div class="botao-ctf"> 
+              <div class="botao-ctf"> 
                   <a href="{% url 'editar_evento' pk=evento.pk %}" class="botao-emissao-ctf">Editar evento</a>
-                </div>
-              </form>
-            
-              <form method="post" action="{% url 'deletar_evento' evento.id_evento %}">
-                {% csrf_token %}
-                <div class="botao-ctf"> 
-                  <button type="submit" class="botao-emissao-ctf">Deletar evento</button>
-                </div>
-              </form>
 
+                  <form method="post" action="{% url 'deletar_evento' evento.id_evento %}">
+                    {% csrf_token %}
+                    <button type="submit" class="botao-emissao-ctf">Deletar evento</button>
+                  </form>
+              </div>
             </div>
           {% endfor %}
         </div>  
