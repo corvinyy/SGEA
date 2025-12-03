@@ -55,7 +55,7 @@ class Evento(models.Model):
         
         # Primeiro valor da lista
         horasInteiras = horas_min[0]
-        minutos = 0
+        minutos = horas_min[1]
         total = ""
         
         if len(horas_min) > 1:
