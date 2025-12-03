@@ -938,7 +938,7 @@ nav a.ativo {
     border-radius: 10px;
 }
 
-.eventos-itens h3 {
+.eventos-itens h3,h5 {
     margin-bottom: 10px;
 
     font-size: 20px;
@@ -1473,7 +1473,7 @@ nav a.ativo {
     justify-content: space-between;
     align-items: center;
 
-    max-width: 1100px;
+    max-width: 1200px;
     width: 95%;
 
     margin: 50px auto 0 auto;

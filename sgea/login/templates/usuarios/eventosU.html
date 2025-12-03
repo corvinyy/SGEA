@@ -5,14 +5,6 @@
 
 {% block content %} 
 
-{% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
 <div class="eventosDisp-container">
     <div class="eventosDisp-titulo">
         <h1>Eventos disponíveis</h1>
@@ -34,14 +26,21 @@
                     {% endif %}
 
                     <h3>{{ evento.nome }}</h3>
-
+                    <h5>Vagas: {{ evento.vagas }}</h5>
+                    
                     <div class="evento-botoes">
                         {% if evento.id_evento in inscritos %}
                             <span style="color: green; font-weight: bold;">✅ Já inscrito</span>
                         {% else %}
                             <form method="post" action="{% url 'inscricao_evento' usuario.id_usuario evento.id_evento %}">
                                 {% csrf_token %}
-                                <button type="submit" class="eventos-inscricao-btn">Inscrever-se</button>
+                                <button 
+                                    type="submit" 
+                                    class="eventos-inscricao-btn"
+                                    data-vagas="{{ evento.vagas }}"
+                                >
+                                    Inscrever-se
+                                </button>
                             </form>
                         {% endif %}
                         <button class="botao-detalhe" data-evento-id="{{ evento.id_evento }}">Ver detalhes</button>

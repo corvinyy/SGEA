@@ -52,6 +52,46 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+
+    /* --------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------------- */
+
+
+    /* PADRÃO DAS MENSAGENS DO TOASTIFY */
+    function message(text, background) {
+        Toastify({
+            text: text,
+            duration: 3000,
+            style: {
+                background: background,
+                boxShadow: "none"
+            }
+        }).showToast();
+    }
+
+    document.addEventListener("click", function(e) {
+        const btn = e.target.closest(".eventos-inscricao-btn");
+        if (!btn) return;
+
+        e.preventDefault();
+
+        const vagas = parseInt(btn.getAttribute("data-vagas"));
+        const form = btn.closest("form");
+
+        if (vagas <= 0) { /*MENSAGEM DE ERRO VAGAS ESGOTADAS*/
+            message("Não há mais vagas disponíveis para este evento!", "linear-gradient(to top, #d83745ff, #b61919ff)");
+            return; 
+        }
+
+            /* MENSAGEM DE INSCRIÇÃO */
+            message("Inscrição do evento realizada com sucesso!", "linear-gradient(to top, #2ec03aff, #157933ff)");
+            setTimeout(() => {
+                form.submit();
+            }, 2000);
+    });
 });
+
+
 
 

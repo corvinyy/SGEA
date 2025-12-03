@@ -590,12 +590,6 @@ def inscricao_evento(request, usuario_id, evento_id):
         usuario = get_object_or_404(Usuario, id_usuario = usuario_id)
         evento = get_object_or_404(Evento, id_evento = evento_id)
     
-        if Inscrito.objects.filter(usuario_id = usuario, evento_id = evento).exists():
-            return HttpResponse("Você já está inscrito neste evento")
-     
-        if evento.vagas <= 0:
-            return HttpResponse("Não há mais vagas disponíveis")
-    
         nova_inscricao = Inscrito.objects.create(usuario_id = usuario, evento_id = evento)
 
         Registro.objects.create(usuario_id = nova_inscricao.usuario_id.id_usuario, evento_id = nova_inscricao.evento_id.id_evento, acao = "Inscrição em evento" )
@@ -603,7 +597,6 @@ def inscricao_evento(request, usuario_id, evento_id):
         evento.vagas -= 1
         evento.save()
         
-        messages.success(request, f"Você foi inscrito com sucesso no seguinte evento: {evento.nome}!")
         return redirect("inscricao")
            
     return render(request,"usuarios/meus_eventos.html", {"usuarios": Usuario.objects.all(), "eventos": Evento.objects.all()}) 
