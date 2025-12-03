@@ -1369,7 +1369,9 @@ nav a.ativo {
 }
 
 .meus-certificados-titulo {
-    width: 750px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     margin: 40px auto;
 
@@ -1464,6 +1466,42 @@ nav a.ativo {
 .zero-certificados {
     text-align: center;
 }
+
+.zero-certificados p{
+    font-size: 20px;
+}
+
+.zero-certificado-ver-eventos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+    gap: 16px;
+}
+
+.zero-certificado-ver-eventos a {
+
+    padding: 10px 20px;
+
+    font-weight: bold;
+    text-decoration: none;
+
+    background-color: var(--quaternary-color);
+    color: var(--tertiary-color);
+    border-radius: 10px;
+
+    transform: scale(1);
+    transition: background-color 0.1s ease, transform 1s ease;
+    
+}
+
+.zero-certificado-ver-eventos a:hover {
+    background-color: var(--botao-preto-color);
+    color: white;
+    transform: scale(1.1);
+
+}
+
 
 /* --------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------- */
@@ -1911,6 +1949,43 @@ nav a.ativo {
         padding: 6px 10px;
         font-size: 12px;
     }
+
+
+    /* Editar perfil de usuario */
+    .editar-perfil-container {
+        width: 90%;
+        padding: 30px 20px;
+        border-width: 6px;
+    }
+
+    .formulario-editar-perfil input {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .botao-salvar-editar-perfil button {
+        width: 100%;
+        align-self: center;
+    }
+
+
+    /* Deletar perfil de usuario */
+    .deletar-perfil-container {
+        width: 90%;
+        padding: 30px 20px;
+        border-width: 6px;
+    }
+
+    .formulario-deletar-perfil input {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .botao-salvar-deletar-perfil button,
+    .botao-voltar a {
+        width: 100%;
+        align-self: center;
+    }
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1965,13 +2040,33 @@ nav a.ativo {
 
     /* Botoes organizador*/
     .botoes-organizador {
-        padding: 25px 30px;
-        gap: 25px;
+        display: flex;
+        flex-wrap: wrap;      
+        justify-content: center;
+        gap: 18px;           
+        padding: 20px 15px;
     }
 
-    .botao-organizador a {
-        font-size: 19px;
-        padding: 14px 22px;
+    .botao-organizador a,
+    .botao-organizador button {
+        font-size: 16px;        
+        padding: 12px 18px;      
+        width: auto;
+        min-width: 180px;       
+        text-align: center;
+    }
+
+
+    /* Emissão — container */
+    .emissao-certi-container {
+        width: 85%;
+        margin: 0 auto;
+    }
+
+
+    /* Lista de itens */
+    .eventos-itens {
+        width: 100%;
     }
 
     /* Login */
