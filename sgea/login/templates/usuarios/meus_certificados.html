@@ -51,10 +51,17 @@
                         
                     </div> 
                     {% endfor %}
+
                 {% else %}
                     <div class="zero-certificados">
-                        <p>Você ainda não possui certificados emitidos.</p>
+                        <p>Você ainda não possui certificados. Participe dos próximos eventos e garanta os seus!</p>
+
+                        <div class="zero-certificado-ver-eventos">
+                            <a href="{% url 'sobre' %}"> SOBRE</a>
+                            <a href="{% url 'inscricao' %}"> VER EVENTOS</a>
+                        </div>
                     </div>
+
                 {% endif %}
             </div>
         
