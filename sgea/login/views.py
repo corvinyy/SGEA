@@ -59,11 +59,17 @@ def deletar_usuario(request):
             return HttpResponse("Senha incorreta. Exclusão interrompida.")
         
         # Adquire as informações, as registra e então deleta o usuário
-        Registro.objects.create(usuario_id = usuario_id, acao = "Exclusão de usuário" )
+        Registro.objects.create(usuario_id = usuario_id, acao = "Exclusão de usuário")
         usuario.delete()
         
         return redirect("cadastro")
         
+def deletar_usuario_adm(request, usuario_id):
+    user = Usuario.objects.filter(id_usuario = usuario_id)
+    user.delete()
+
+    return redirect("listagem_usuarios")
+
 def cadastro_usuarios(request):
     # Adquire todas as informações inseridas pelo usuário
     if request.method == "POST":
@@ -276,6 +282,7 @@ def todos_eventos(request):
     return render(request, "usuarios/visu_eventos.html", eventos)
 
 def eventos(request):
+    
     try:
         # Validação das informações adquiridas no campo das datas
         dia_inicio_str = request.POST.get("dataI")
@@ -383,7 +390,12 @@ def eventos(request):
             horas = horasC
         
         imagem = request.FILES.get("imagem")
-        descricao = request.POST.get("descricao")
+
+        prof_id_str = request.POST.get("profOrg")
+        prof_id = int(prof_id_str)
+        
+        prof_selecionado = get_object_or_404(Usuario, id_usuario=prof_id)
+        prof_organizador = f"{prof_selecionado.nome} {prof_selecionado.sobrenome}"
 
         # Caso todas as informações sejam verificadas, um novo evento é criado
         novo_evento = Evento.objects.create(
@@ -395,12 +407,12 @@ def eventos(request):
         horarioF = horario_final,
         local = request.POST.get("local"),
         quantPart = quantParticipantesInt,
-        organResp = request.POST.get("organResp"),
+        organResp = prof_organizador,
         vagas = vagasInt,
         assinatura = ass,
         horas = horas,
         imagem = imagem,
-        descricao = descricao
+        descricao = request.POST.get("descricao")
         )
         
         Registro.objects.create(evento_id = novo_evento.id_evento, acao = "Criação de evento")
@@ -414,7 +426,7 @@ def eventos(request):
     eventos = {
         'eventos' : Evento.objects.all(),
     }
-    
+
     return render(request, 'usuarios/visu_eventos.html', eventos)
 
 def ev(request):
@@ -432,7 +444,15 @@ def ev(request):
     if usuario.tipo != "organizador":
         return redirect("inscricao")
     
-    return render(request, "usuarios/eventos.html", {"usuarios" : usuario})
+    profs = Usuario.objects.filter(tipo='professor')
+    
+    conteudo = {
+        "usuarios" : usuario,
+        "profs" : profs
+    }
+    
+    print(conteudo)
+    return render(request, "usuarios/eventos.html", conteudo)
 
 def deletar_evento(request, pk):
     usuario_id = request.session.get("usuario_id")

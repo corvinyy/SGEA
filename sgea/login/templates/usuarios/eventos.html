@@ -50,10 +50,14 @@
             </div>
 
             <div class="form-grupo">
-              <label>Organizador Responsável</label>
-              <input name = "organResp" class = "form-control-sm" type = "text" autocomplete="off" placeholder="" required>
+              <label for="profOrg">Professor associado</label>
+                <select name="profOrg" id="profOrg" required style="width: 220px">
+                  <option value="" disabled selected hidden style='display : none'>Selecione</option>
+                    {% for pf in profs %} 
+                      <option value="{{ pf.id_usuario }}"> {{ pf.nome }} {{ pf.sobrenome }} </option> 
+                    {% endfor %}
+                </select> 
             </div>
-          </div>
           
           <div class="form-linha">
             <div class="form-grupo">

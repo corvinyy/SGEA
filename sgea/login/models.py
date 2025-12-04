@@ -37,7 +37,7 @@ class Evento(models.Model):
     horarioF = models.TimeField()    
     local = models.TextField(max_length = 255)
     quantPart = models.IntegerField()
-    organResp = models.TextField(max_length = 255)
+    organResp = models.CharField(max_length=300, null=False)
     vagas = models.IntegerField()
     emitido = models.BooleanField(default = False)
     assinatura = models.TextField(max_length = 255, null = False)
