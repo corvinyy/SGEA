@@ -96,6 +96,23 @@ def cadastro_usuarios(request):
             messages.error(request, "As senhas são diferentes.")
             return redirect("cadastro")
 
+        if len(senha) < 8:
+            messages.error(request, "A senha deve possuir mais de 8 dígitos.")
+            
+            dados_preenchidos = {
+            'nome_preenchido' : nome,
+            'sobrenome_preenchido' : sobrenome,
+            'senha_preenchida' : senha,
+            'telefone_preenchido' : telefone,
+            'email_preenchido' : email,
+            'instituicao_preenchida' : instituicao,
+            'tipo_usuario_preenchida' : tipo_usuario,
+            'senha_tipo_preenchida' : tipo_usuario,
+            'confirmar_senha_preenchida' : confirmar_senha
+        }
+        
+            return render(request, 'usuarios/home.html', dados_preenchidos)
+
         if len(senha) >= 8:
             carac_especial = "@#$!%^&*()-+?_=,<>/\|."
             numeros = "0123456789"
@@ -103,37 +120,48 @@ def cadastro_usuarios(request):
                 if any(c in numeros for c in senha):
                     pass
                 else:
-                    return HttpResponse("A senha deve possuir ao menos um número.")
+                    messages.error(request, "A senha deve possuir ao menos um número.")
+                    return redirect("cadastro")
             else:
-                return HttpResponse("A senha deve possuir ao menos um caracter especial.")
+                messages.error(request, "A senha deve possuir ao menos um caracter especial.")
+                return redirect("cadastro")
         else:
-            return HttpResponse("A senha deve possuir no mínimo 8 caracteres.")
+            messages.error(request, "A senha deve possuir ao menos um número.")
+            return redirect("cadastro")
 
         # Caso o número inserido não esteja no formato definido, esta mensagem irá aparecer ao usuário
         if not tamanhoT == 11:
-            return HttpResponse("Número inserido de forma inválida, deve seguir o seguinte formato: '99999999999'.")
-            
+            messages.error(request, "Número inserido de forma inválida, deve seguir o seguinte formato: '99999999999'.")
+            return redirect("cadastro")
         try:
             validatorE(email)
         # Caso o email inserido não esteja no formato definido, esta mensagem irá aparecer ao usuário
         except Exception:
-            return HttpResponse("Email inserido de forma inválida, deve seguir o seguinte modelo: 'exemplo@exemplo.com'")
+            messages.error(request, "Email inserido de forma inválida, deve seguir o seguinte modelo: 'exemplo@exemplo.com'")
+            return redirect("cadastro")
         
         # Caso o telefone já tenha sido utilizado, o sistema impede de criar um novo usuário
         if Usuario.objects.filter(telefone = telefone).exists():
-            return HttpResponse("Este telefone já foi cadastrado.")
+            messages.error(request, "Este telefone já foi cadastrado.")
+            return redirect("cadastro")
 
         # Se todas as informações são válidas, um novo usuário é criado
         if tipo_usuario == "professor":
             if senha_tipo != SENHAPROF:
-                return HttpResponse("Senha do professor inválida. Cadastro negado.")
-        
+                messages.error(request, "Senha do professor inválida. Cadastro negado.")
+                return redirect("cadastro")
+
+                    
         elif tipo_usuario == "organizador":
             if senha_tipo != SENHAORG:
-                return HttpResponse("Senha do organizador inválida. Cadastro negado.")
+                messages.error(request, "Senha do organizador inválida. Cadastro negado.")
+                return redirect("cadastro")
+
         
         if Usuario.objects.filter(email = email).exists():
-            return HttpResponse("Este email já foi cadastrado.")
+            messages.error(request, "Este email já foi cadastrado.")
+            return redirect("cadastro")
+
         
         # Gerador de código que escolhe entre 10 números aleatórios e 26 letras aleatórias
         # O usuário pode escolher entrar com o código disponibilizado ou com a senha criada anteriormente
@@ -474,7 +502,7 @@ def deletar_evento(request, pk):
     Registro.objects.create(evento_id = pk, acao = "Exclusão de evento")
     
     evento.delete()
-    return redirect("even")
+    return redirect("ver_certs")
 
 def editar_evento(request, pk):
     usuario_id = request.session.get("usuario_id")
@@ -637,8 +665,16 @@ def usuario_eventos(request):
 #Funções envolvendo certificados------------------------------------------------------------------------------------------------------------
 
 def ver_certificados(request):
+    usuario_id = request.session.get("usuario_id")
+
+    if not usuario_id:
+        return redirect("login")
+    
+    user = get_object_or_404(Usuario, id_usuario = usuario_id)
+    
     eventos = {
-        'eventos' : Evento.objects.filter(emitido = False)
+        'eventos' : Evento.objects.filter(emitido = False),
+        'usuario' : user
     }
     
     return render(request, "usuarios/certificados.html", eventos)
@@ -655,7 +691,7 @@ def emitir_certificados(request):
         for ev in evento:
             try:
                 with transaction.atomic():
-                    inscricoes = Inscrito.objects.filter(evento_id = ev.pk)
+                    inscricoes = Inscrito.objects.filter(evento_id = ev.id_evento)
 
                     if not inscricoes.exists():
                         ev.emitido = True
@@ -663,16 +699,17 @@ def emitir_certificados(request):
                         messages.warning(request, f"AVISO: Evento: {ev.nome} finalizado (sem inscrições).")
                         continue
                     
+                    messages.info(request, "Seguintes eventos foram finalizados: ")
                     for inscricao in inscricoes:
                         nova_emissao = Certificado.objects.create(usuario_id = inscricao.usuario_id, evento_id = inscricao.evento_id, assinatura = inscricao.evento_id.assinatura, horas = inscricao.evento_id.horas_e_minutos)
                     
-                    Inscrito.objects.filter(evento_id = evento.pk).delete()        
-                    
+                    Inscrito.objects.filter(evento_id = ev.id_evento).delete()        
                     Registro.objects.create(usuario_id = nova_emissao.usuario_id.id_usuario, evento_id = nova_emissao.evento_id.id_evento, acao = "Emissão de certificado" )
                     
-                    evento.emitido = True
-                    evento.save()
-                    
+                    ev.emitido = True
+                    ev.save()
+                    messages.success(request, f"{ev.nome}")
+            
             except Exception as e:
                 return HttpResponse(f"Erro na emissão de certificados: {e}")
                 
