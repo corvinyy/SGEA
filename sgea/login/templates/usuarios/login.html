@@ -5,9 +5,16 @@
 
 {% block content %} 
 
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
     <form method="post">
         {% csrf_token %}
-
         <section class="botoes-organizador">
             <div class="botao-organizador">
                 <a href = "{% url 'cadastro' %}">
@@ -23,7 +30,7 @@
 
             <div class="formulario-login">
                 <div class="form-login-grupo">
-                    <input type="text" name="email" required autocomplete="off" placeholder="Email">
+                    <input type="text" name="email" value="{{ email_preenchido|default:'' }}" required autocomplete="off" placeholder="Email">
                     <img src="../../static/assets/icons/usuario-icon.png" alt="ícone de usuário" width="20px" height="20px" style="margin-right: 20px;">
                 </div>
 

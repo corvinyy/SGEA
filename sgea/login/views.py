@@ -83,6 +83,17 @@ def cadastro_usuarios(request):
         senha_tipo = request.POST.get("senha_acesso")
         confirmar_senha = request.POST.get("confirmar_senha")
         
+        dados_preenchidos = {
+            'nome_preenchido' : nome,
+            'sobrenome_preenchido' : sobrenome,
+            'senha_preenchida' : senha,
+            'telefone_preenchido' : telefone,
+            'email_preenchido' : email,
+            'instituicao_preenchida' : instituicao,
+            'tipo_usuario_preenchida' : tipo_usuario,
+            'confirmar_senha_preenchida' : confirmar_senha
+        }
+
         # Senhas de acesso para a criação de perfis de tipo 'professor' e 'organizador', respectivamente
         SENHAPROF = "123"
         SENHAORG = "321"
@@ -94,23 +105,11 @@ def cadastro_usuarios(request):
 
         if not confirmar_senha == senha:
             messages.error(request, "As senhas são diferentes.")
-            return redirect("cadastro")
+            return render(request, 'usuarios/home.html', dados_preenchidos)
 
         if len(senha) < 8:
+            print(dados_preenchidos)
             messages.error(request, "A senha deve possuir mais de 8 dígitos.")
-            
-            dados_preenchidos = {
-            'nome_preenchido' : nome,
-            'sobrenome_preenchido' : sobrenome,
-            'senha_preenchida' : senha,
-            'telefone_preenchido' : telefone,
-            'email_preenchido' : email,
-            'instituicao_preenchida' : instituicao,
-            'tipo_usuario_preenchida' : tipo_usuario,
-            'senha_tipo_preenchida' : tipo_usuario,
-            'confirmar_senha_preenchida' : confirmar_senha
-        }
-        
             return render(request, 'usuarios/home.html', dados_preenchidos)
 
         if len(senha) >= 8:
@@ -121,46 +120,46 @@ def cadastro_usuarios(request):
                     pass
                 else:
                     messages.error(request, "A senha deve possuir ao menos um número.")
-                    return redirect("cadastro")
+                    return render(request, 'usuarios/home.html', dados_preenchidos)
             else:
                 messages.error(request, "A senha deve possuir ao menos um caracter especial.")
-                return redirect("cadastro")
+                return render(request, 'usuarios/home.html', dados_preenchidos)
         else:
             messages.error(request, "A senha deve possuir ao menos um número.")
-            return redirect("cadastro")
+            return render(request, 'usuarios/home.html', dados_preenchidos)
 
         # Caso o número inserido não esteja no formato definido, esta mensagem irá aparecer ao usuário
         if not tamanhoT == 11:
             messages.error(request, "Número inserido de forma inválida, deve seguir o seguinte formato: '99999999999'.")
-            return redirect("cadastro")
+            return render(request, 'usuarios/home.html', dados_preenchidos)
         try:
             validatorE(email)
         # Caso o email inserido não esteja no formato definido, esta mensagem irá aparecer ao usuário
         except Exception:
             messages.error(request, "Email inserido de forma inválida, deve seguir o seguinte modelo: 'exemplo@exemplo.com'")
-            return redirect("cadastro")
+            return render(request, 'usuarios/home.html', dados_preenchidos)
         
         # Caso o telefone já tenha sido utilizado, o sistema impede de criar um novo usuário
         if Usuario.objects.filter(telefone = telefone).exists():
             messages.error(request, "Este telefone já foi cadastrado.")
-            return redirect("cadastro")
+            return render(request, 'usuarios/home.html', dados_preenchidos)
 
         # Se todas as informações são válidas, um novo usuário é criado
         if tipo_usuario == "professor":
             if senha_tipo != SENHAPROF:
                 messages.error(request, "Senha do professor inválida. Cadastro negado.")
-                return redirect("cadastro")
+                return render(request, 'usuarios/home.html', dados_preenchidos)
 
                     
         elif tipo_usuario == "organizador":
             if senha_tipo != SENHAORG:
                 messages.error(request, "Senha do organizador inválida. Cadastro negado.")
-                return redirect("cadastro")
+                return render(request, 'usuarios/home.html', dados_preenchidos)
 
         
         if Usuario.objects.filter(email = email).exists():
             messages.error(request, "Este email já foi cadastrado.")
-            return redirect("cadastro")
+            return render(request, 'usuarios/home.html', dados_preenchidos)
 
         
         # Gerador de código que escolhe entre 10 números aleatórios e 26 letras aleatórias
@@ -223,8 +222,14 @@ def loginU(request):
         email = request.POST.get("email")
         inputS = request.POST.get("senha") 
 
+        dados_preenchidos = {
+            'email_preenchido' : email,
+            'senha_preenchida' : inputS
+        }
+
         if not email or not inputS:
-            return HttpResponse("Insira um email e uma senha.")
+            messages.error(request, 'Insira um email e senha válidos.')
+            return redirect('login')
 
         user = authenticate(request, username=email, password=inputS) 
         
@@ -243,9 +248,12 @@ def loginU(request):
         else:
             try:
                 Usuario.objects.get(email=email)
-                return HttpResponse("Usuário ou senha incorretos.") 
+                messages.error(request, 'Usuário ou senha incorreta.')
+                return render(request, 'usuarios/login.html', dados_preenchidos)
+                
             except Usuario.DoesNotExist:
-                return HttpResponse("Usuário não encontrado") 
+                messages.error(request, 'Usuário não encontrado.')
+                return render(request, 'usuarios/login.html', dados_preenchidos) 
         
     return render(request, "usuarios/login.html")
 
@@ -310,152 +318,178 @@ def todos_eventos(request):
     return render(request, "usuarios/visu_eventos.html", eventos)
 
 def eventos(request):
-    
-    try:
-        # Validação das informações adquiridas no campo das datas
-        dia_inicio_str = request.POST.get("dataI")
-        dia_fim_str = request.POST.get("dataF")
-
-        # Verifica se os espaços dos dias não estão vazios
-        if not dia_inicio_str or not dia_fim_str:  
-            return HttpResponse("O campo data de início e final são obrigatórios")
-
-        ass = request.POST.get("assinatura")
-
+    if request.method == 'POST':
         try:
-            # Define a forma que a data deve ser inserida para criar a string, .date() é utilizado para adquirir apenas a parte da data
+            # Validação das informações adquiridas no campo das datas
+            dia_inicio_str = request.POST.get("dataI")
+            dia_fim_str = request.POST.get("dataF")
+
+            ass = request.POST.get("assinatura")
+
             dia_inicio = datetime.strptime(dia_inicio_str, "%Y-%m-%d").date()
             dia_fim = datetime.strptime(dia_fim_str, "%Y-%m-%d").date()
-            
-        except ValueError:
-            return HttpResponse("Formatação da data inválido, use: 'dia-mes-ano'.")
- 
-        #data_hj = timezone.now().date()
- 
-        if dia_fim < dia_inicio:
-            return HttpResponse("A data final não pode ser anterior a data inicial.")
 
-        #if dia_inicio < data_hj:
-            return HttpResponse("A data de início não pode ser anterior à data atual.")
-
-        # Validação das informações adquiridas no campo dos horários
-        horarioI_str = request.POST.get("horarioI")
-        horarioF_str = request.POST.get("horarioF")
-        
-        # Verifica se os espaços não estão vazios
-        if not horarioI_str or not horarioF_str:
-            return HttpResponse("O campo do horário inicial e final são obrigatórios")
-        
-        try:
-            # Define a forma que o horário deve ser inserido para criar 
+            # Validação das informações adquiridas no campo dos horários
+            horarioI_str = request.POST.get("horarioI")
+            horarioF_str = request.POST.get("horarioF")
             horario_inicio = datetime.strptime(horarioI_str, "%H:%M").time()
             horario_final = datetime.strptime(horarioF_str, "%H:%M").time()
-        
-        except ValueError:
-            return HttpResponse("Formato de data inserido inválido.")
             
-        # Verifica se os horários estão entre horários existentes (entre 0 ou 24 horas)
-        if horario_final <= horario_inicio:
-            return HttpResponse("O horário final não pode ser anterior ao inicial.")
+
+            # Cria um objeto datetime com uma data de placeholder e o horário definido pelo usuário
+            datetime_inicio = datetime.combine(date.min, horario_inicio)
+            datetime_final = datetime.combine(date.min, horario_final)
         
-        # Validação das informações adquiridas no campo das vagas
-        vagas_str = request.POST.get("vagas")
-        quantParticipantes_str = request.POST.get("quantPart")
-        
-        # Verifica se a informação adquirida é um número inteiro
-        try:
-            vagasInt = int(vagas_str)
-        except ValueError:
-            return HttpResponse("O valor das vagas deve ser um número inteiro positivo")
-        
-        try:
-            quantParticipantesInt = int(quantParticipantes_str)
-        except ValueError:
-            return HttpResponse("O valor da quantidade de participantes deve ser um valor inteiro positivo")
-        
-        # Verifica se há uma quantidade maior de vagas do que de participantes
-        if vagasInt > quantParticipantesInt:
-            return HttpResponse("Não pode haver um número maior de vagas do que de participantes")
-        
-        # Verifica se os valores são positivos
-        if quantParticipantesInt < 0:
-            return HttpResponse("Não pode haver uma quantidade negativa de participantes")
-        
-        if vagasInt < 0:
-            return HttpResponse("Não pode haver uma quantidade negativa de vagas")
-        
-        # Cria um objeto datetime com uma data de placeholder e o horário definido pelo usuário
-        datetime_inicio = datetime.combine(date.min, horario_inicio)
-        datetime_final = datetime.combine(date.min, horario_final)
-       
-        # Duração do evento      
-        duracao_timedelta = datetime_final - datetime_inicio
-                
-        # Duração do evento em segundos
-        total_segundos = duracao_timedelta.total_seconds()
-        
-        # Horas do evento, sem conter resto, sendo um número inteiro
-        horas_inteiras = total_segundos // 3600
-        
-        # Segundos do evento, adquirindo o total possível divido por 3600
-        segundos_restantes = total_segundos % 3600
-        
-        # Resto dos minutos, arredondando para baixo
-        minutos_restantes = round(segundos_restantes / 60)
-        
-        minutos_decimal = minutos_restantes / 100.0
-        horasC = Decimal(horas_inteiras) + Decimal(f"{minutos_decimal:.2f}")
-        
-        horasinp = request.POST.get("horas")
-        if horasinp:
-            try:
-                horas = Decimal(horasinp)
-        
-            except ValueError:
+            # Duração do evento      
+            duracao_timedelta = datetime_final - datetime_inicio
+                    
+            # Duração do evento em segundos
+            total_segundos = duracao_timedelta.total_seconds()
+            
+            # Horas do evento, sem conter resto, sendo um número inteiro
+            horas_inteiras = total_segundos // 3600
+            
+            # Segundos do evento, adquirindo o total possível divido por 3600
+            segundos_restantes = total_segundos % 3600
+            
+            # Resto dos minutos, arredondando para baixo
+            minutos_restantes = round(segundos_restantes / 60)
+            
+            minutos_decimal = minutos_restantes / 100.0
+            horasC = Decimal(horas_inteiras) + Decimal(f"{minutos_decimal:.2f}")
+            horasinp = request.POST.get("horas")
+            if horasinp:
+                try:
+                    horas = Decimal(horasinp)
+            
+                except ValueError:
+                    horas = horasC
+            
+            else:
                 horas = horasC
-        
-        else:
-            horas = horasC
-        
-        imagem = request.FILES.get("imagem")
+            
+            # Validação das informações adquiridas no campo das vagas
+            vagas_str = request.POST.get("vagas")
+            vagasInt = int(vagas_str)
+            quantParticipantes_str = request.POST.get("quantPart")
+            quantParticipantesInt = int(quantParticipantes_str)
 
-        prof_id_str = request.POST.get("profOrg")
-        prof_id = int(prof_id_str)
-        
-        prof_selecionado = get_object_or_404(Usuario, id_usuario=prof_id)
-        prof_organizador = f"{prof_selecionado.nome} {prof_selecionado.sobrenome}"
+            # Informações adquiridas e tratadas para serem corretamente utilizadas
+            prof_id_str = request.POST.get("profOrg")
+            prof_id = int(prof_id_str)
+            prof_selecionado = get_object_or_404(Usuario, id_usuario=prof_id)
+            prof_organizador = f"{prof_selecionado.nome} {prof_selecionado.sobrenome}"
+            
+            imagem = request.FILES.get("imagem")
 
-        # Caso todas as informações sejam verificadas, um novo evento é criado
-        novo_evento = Evento.objects.create(
-        nome = request.POST.get("nome"),
-        tipoevento = request.POST.get("tipoE"),
-        dataI = dia_inicio,
-        dataF = dia_fim,
-        horarioI = horario_inicio,
-        horarioF = horario_final,
-        local = request.POST.get("local"),
-        quantPart = quantParticipantesInt,
-        organResp = prof_organizador,
-        vagas = vagasInt,
-        assinatura = ass,
-        horas = horas,
-        imagem = imagem,
-        descricao = request.POST.get("descricao")
-        )
-        
-        Registro.objects.create(evento_id = novo_evento.id_evento, acao = "Criação de evento")
-        
-        novo_evento.save()    
+            dados_preenchidos = {
+                'nomep' : request.POST.get('nome'),
+                'tipoeventop' : request.POST.get('tipoE'),
+                'dataIp' : request.POST.get('dataI'),
+                'dataFp' : request.POST.get('dataF'),
+                'horarioIp' : request.POST.get('horarioI'),
+                'horarioFp' : request.POST.get('horarioF'),
+                'localp' : request.POST.get('local'),
+                'quantPartp' : request.POST.get('quantPart'),
+                'organRespp' : request.POST.get('profOrg'),
+                'vagasp' : request.POST.get('vagas'),
+                'assinaturap' : request.POST.get('assinatura'),
+                'horasp' : request.POST.get('horas'),
+                'imagemp' : request.POST.get('imagem'),
+                'descricaop' : request.POST.get('descricao')
+            }
+
+            # Verifica se os espaços dos dias não estão vazios
+            if not dia_inicio_str or not dia_fim_str:  
+                return HttpResponse("O campo data de início e final são obrigatórios")
+
+            try:
+                # Define a forma que a data deve ser inserida para criar a string, .date() é utilizado para adquirir apenas a parte da data
+                dia_inicio = datetime.strptime(dia_inicio_str, "%Y-%m-%d").date()
+                dia_fim = datetime.strptime(dia_fim_str, "%Y-%m-%d").date()
+                
+            except ValueError:
+                return HttpResponse("Formatação da data inválido, use: 'dia-mes-ano'.")
     
-    except ValueError:
-        messages.error(request, "Erro")
-        return redirect("visu_eventos")
+            #data_hj = timezone.now().date()
     
-    eventos = {
-        'eventos' : Evento.objects.all(),
-    }
+            if dia_fim < dia_inicio:
+                messages.error(request, 'A data final não pode ser anterior à data inicial.')
+                return render(request, 'usuarios/eventos.html', dados_preenchidos)
 
-    return render(request, 'usuarios/visu_eventos.html', eventos)
+            #if dia_inicio < data_hj:
+                return HttpResponse("A data de início não pode ser anterior à data atual.")
+            
+            # Verifica se os espaços não estão vazios
+            if not horarioI_str or not horarioF_str:
+                return HttpResponse("O campo do horário inicial e final são obrigatórios")
+            
+            try:
+                # Define a forma que o horário deve ser inserido para criar 
+                horario_inicio = datetime.strptime(horarioI_str, "%H:%M").time()
+                horario_final = datetime.strptime(horarioF_str, "%H:%M").time()
+            
+            except ValueError:
+                return HttpResponse("Formato de data inserido inválido.")
+                
+            # Verifica se os horários estão entre horários existentes (entre 0 ou 24 horas)
+            if horario_final <= horario_inicio:
+                return HttpResponse("O horário final não pode ser anterior ao inicial.")
+            
+            # Verifica se a informação adquirida é um número inteiro
+            try:
+                vagasInt = int(vagas_str)
+            except ValueError:
+                return HttpResponse("O valor das vagas deve ser um número inteiro positivo")
+            
+            try:
+                quantParticipantesInt = int(quantParticipantes_str)
+            except ValueError:
+                return HttpResponse("O valor da quantidade de participantes deve ser um valor inteiro positivo")
+            
+            # Verifica se há uma quantidade maior de vagas do que de participantes
+            if vagasInt > quantParticipantesInt:
+                return HttpResponse("Não pode haver um número maior de vagas do que de participantes")
+            
+            # Verifica se os valores são positivos
+            if quantParticipantesInt < 0:
+                return HttpResponse("Não pode haver uma quantidade negativa de participantes")
+            
+            if vagasInt < 0:
+                return HttpResponse("Não pode haver uma quantidade negativa de vagas")
+            
+            
+
+            # Caso todas as informações sejam verificadas, um novo evento é criado
+            novo_evento = Evento.objects.create(
+            nome = request.POST.get("nome"),
+            tipoevento = request.POST.get("tipoE"),
+            dataI = dia_inicio,
+            dataF = dia_fim,
+            horarioI = horario_inicio,
+            horarioF = horario_final,
+            local = request.POST.get("local"),
+            quantPart = quantParticipantesInt,
+            organResp = prof_organizador,
+            vagas = vagasInt,
+            assinatura = ass,
+            horas = horas,
+            imagem = imagem,
+            descricao = request.POST.get("descricao")
+            )
+            
+            Registro.objects.create(evento_id = novo_evento.id_evento, acao = "Criação de evento")
+            novo_evento.save()    
+        
+        except ValueError:
+            messages.error(request, "Erro")
+            return redirect("visu_eventos")
+        
+        eventos = {
+            'eventos' : Evento.objects.all(),
+        }
+
+        return render(request, 'usuarios/visu_eventos.html', eventos)
 
 def ev(request):
     usuario_id = request.session.get("usuario_id")

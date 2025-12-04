@@ -5,6 +5,14 @@
 
 {% block content %} 
 
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 <section class="botoes-organizador">
   <div class="botao-organizador">
     <a href = "{% url 'ver_certs' %}">
@@ -24,24 +32,24 @@
           <div class="form-linha">
             <div class="form-grupo">
               <label>Nome do evento</label>
-              <input name = "nome" class = "form-control-sm" type="text" autocomplete="off" placeholder="" required>
+              <input name = "nome" class = "form-control-sm" value="{{ nomep|default:'' }}" type="text" autocomplete="off" placeholder="" required>
             </div>  
 
             <div class="form-grupo">
               <label>Tipo do evento</label>
-              <input name = "tipoE" class = "form-control-sm" type = "text" autocomplete="off" placeholder="" required>
+              <input name = "tipoE" class = "form-control-sm" value="{{ tipoeventop|default:'' }}"type = "text" autocomplete="off" placeholder="" required>
             </div>
             
             <div class="form-grupo">
               <label>Local</label>
-              <input name = "local" class = "form-control-sm" type = "text" autocomplete="off" placeholder="" required>
+              <input name = "local" class = "form-control-sm" value="{{ localp|default:'' }}"type = "text" autocomplete="off" placeholder="" required>
             </div>
           </div>
 
           <div class="form-linha">
             <div class="form-grupo">
               <label>Data de Início</label>
-              <input name = "dataI" class = "form-control-sm" type = "date" autocomplete="off" placeholder="dd/mm/YYYY" " required>
+              <input name = "dataI" class = "form-control-sm" value='{{ dataIp|default:"" }}' type = "date" autocomplete="off" placeholder="dd/mm/YYYY" " required>
             </div>
 
             <div class="form-grupo">
@@ -57,51 +65,51 @@
                       <option value="{{ pf.id_usuario }}"> {{ pf.nome }} {{ pf.sobrenome }} </option> 
                     {% endfor %}
                 </select> 
-            </div>
+            </div>  
           
           <div class="form-linha">
             <div class="form-grupo">
               <label>Horário de Início</label>
-              <input name = "horarioI" class = "form-control-sm" type = "time" autocomplete="off" placeholder="hh" required>
+              <input name = "horarioI" class = "form-control-sm" value="{{ horarioIp|default:'' }}" type = "time" autocomplete="off" placeholder="hh" required>
             </div>
 
             <div class="form-grupo">
               <label>Horário de término</label> 
-              <input name = "horarioF" class = "form-control-sm" type = "time" autocomplete="off" placeholder="hh" required>
+              <input name = "horarioF" class = "form-control-sm" value="{{ horarioFp|default:'' }}" type = "time" autocomplete="off" placeholder="hh" required>
             </div>
             
             <div class="form-grupo">
               <label>Nº Participantes</label>
-              <input name = "quantPart" class = "form-control-sm" type ="number" autocomplete="off" placeholder="" required>
+              <input name = "quantPart" class = "form-control-sm" value="{{ quantPartp|default:'' }}" type ="number" autocomplete="off" placeholder="" required>
             </div>
           </div>
 
           <div class="form-linha">
             <div class="form-grupo">  
               <label>Nº Vagas</label>
-              <input name="vagas" class = "form-control-sm" type = "number" autocomplete="off" placeholder="" required> 
+              <input name="vagas" class = "form-control-sm" value="{{ vagasp|default:'' }}" type = "number" autocomplete="off" placeholder="" required> 
             </div>
 
             <div class="form-grupo">  
               <label>Horas complementares</label>
-              <input name="horas" class = "form-control-sm" type = "number" min="0" autocomplete="off" placeholder="" oninput="validity.valid||(value='');"> 
+              <input name="horas" class = "form-control-sm" value="{{ horasp|default:'' }}" type = "number" min="0" autocomplete="off" placeholder="" oninput="validity.valid||(value='');"> 
             </div>
           
             <div class="form-grupo">  
               <label>Assinatura</label>
-              <input name="assinatura" class = "form-control-sm" type = "text" autocomplete="off" placeholder="" required> 
+              <input name="assinatura" class = "form-control-sm" value="{{ assinaturap|default:'' }}"  type = "text" autocomplete="off" placeholder="" required> 
             </div>
           </div>
           
           <div class="form-linha">
             <div class="form-grupo">  
               <label>Descrição</label>
-              <input name="descricao" class = "form-control-sm" type = "text" autocomplete="off" placeholder="" required> 
+              <input name="descricao" class = "form-control-sm" value="{{ descricaop|default:'' }}" type = "text" autocomplete="off" placeholder="" required> 
             </div>
           
             <div class="form-grupo">  
               <label>Imagens (PNG/JPEG)</label>
-              <input name="imagem" class = "form-control-sm" type = "file" accept="image/png,image/jpeg" autocomplete="off"> 
+              <input name="imagem" class = "form-control-sm" value="{{ imagemp|default:'' }}" type = "file" accept="image/png,image/jpeg" autocomplete="off"> 
             </div>
           </div>
 
