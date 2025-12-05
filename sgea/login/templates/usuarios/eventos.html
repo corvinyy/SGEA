@@ -59,13 +59,14 @@
 
             <div class="form-grupo">
               <label for="profOrg">Professor associado</label>
-                <select name="profOrg" id="profOrg" required style="width: 220px">
+                <select name="profOrg" id="profOrg" class = "form control-sm" required style="width: 220px">
                   <option value="" disabled selected hidden style='display : none'>Selecione</option>
                     {% for pf in profs %} 
                       <option value="{{ pf.id_usuario }}"> {{ pf.nome }} {{ pf.sobrenome }} </option> 
                     {% endfor %}
                 </select> 
-            </div>  
+            </div>
+          </div>  
           
           <div class="form-linha">
             <div class="form-grupo">
