@@ -1,34 +1,50 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Meus Eventos</title>
-</head>
-<body>
-    <h1>Eventos em que {{ usuario.nome }} está inscrito</h1>
+{% extends 'usuarios/base.html' %}
+{% load static %}
+
+{% block title %}Meus Eventos Inscritos - Casa de Atena{% endblock %}
+
+{% block content %}
+
+<div class="meus-eventos-container">
+
+    <h1 class="meus-eventos-titulo">
+        Eventos em que {{ usuario.nome }} está inscrito(a)
+    </h1>
 
     {% if eventos %}
-        <ul>
-        {% for evento in eventos %}
-            <li>
-                {{ evento.nome }} - {{ evento.tipoevento }} <br>
-                Local: {{ evento.local }} <br>
-                Data: {{ evento.dataI }} até {{ evento.dataF }} <br>
-                Horário: {{ evento.horarioI }}h às {{ evento.horarioF }}h
-            </li>
-            <hr>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>Você ainda não está inscrito em nenhum evento.</p>
-    {% endif %}
-</body>
-</html>
+        <div class="meus-eventos-lista">
 
-<section class="botoes-organizador">
-  <div class="botao-organizador">
-    <a href = "{% url 'inscricao' %}">
-      Voltar
-    </a>
-  </div>
-</section>
+            {% for evento in eventos %}
+            <div class="meus-eventos-card">
+
+                <div class="meus-eventos-itens">
+
+                    <div class="meus-eventos-img">
+                        {% if evento.imagem %}
+                            <img src="{{ evento.imagem.url }}" alt="Imagem do evento {{ evento.nome }}">
+                        {% else %}
+                            <span class="meus-eventos-img-placeholder">Sem imagem</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="meus-eventos-info">
+                        <h3>{{ evento.nome }}</h3>
+                        <p><strong>Tipo:</strong> {{ evento.tipoevento }}</p>
+                        <p><strong>Local:</strong> {{ evento.local }}</p>
+                        <p><strong>Data:</strong> {{ evento.dataI }} até {{ evento.dataF }}</p>
+                        <p><strong>Horário:</strong> {{ evento.horarioI }}h às {{ evento.horarioF }}h</p>
+                    </div>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+        <p class="meus-eventos-empty">Você ainda não está inscrito em nenhum evento.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
