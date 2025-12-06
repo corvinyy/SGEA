@@ -268,6 +268,7 @@ def editar_usuario(request):
     if request.method == "POST":
         nome = request.POST.get("nome")
         senha = request.POST.get("senha")
+        sobrenome = request.POST.get("sobrenome")
         telefone = request.POST.get("telefone")
         
         if Usuario.objects.filter(telefone = telefone).exclude(id_usuario = usuario_id).exists():
@@ -288,9 +289,14 @@ def editar_usuario(request):
         usuario.nome = nome
         usuario.set_password(senha)
         usuario.telefone = telefone_arrumado
+        usuario.sobrenome = sobrenome
         usuario.save()
     
         return redirect("inscricao")
+
+    telefone_d = (usuario.telefone)
+    telefone_desarrumado = f"{telefone_d[1]}{telefone_d[2]}{telefone_d[5:10]}{telefone_d[11:]}"
+    usuario.telefone = telefone_desarrumado
 
     return render(request, "usuarios/editar_usuario.html", {"usuario" : usuario})
 
