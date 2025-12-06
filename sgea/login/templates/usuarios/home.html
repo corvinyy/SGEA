@@ -62,33 +62,15 @@
                       <label for = "ensi">Instituição de ensino</label>
                       <select name = "ensi" id = "ensi" required style="width: 220px">
                         <option value="" disabled selected hidden style='display : none'>Selecione</option>
-                        {% if instituicao_preenchida == 'CEUB' %}
-                          <option selected = "CEUB"> CEUB </option> 
-                        {% endif %}
-                        {% if instituicao_preenchida == 'UNIEURO' %}
-                          <option selected = "UNIEURO"> UNIEURO </option> 
-                        {% endif %}
-                        {% if instituicao_preenchida == 'IFB' %}
-                          <option selected = "IFB"> IFB </option> 
-                        {% endif %}
-                        {% if instituicao_preenchida == 'UNB' %}
-                          <option selected = "UNB"> UNB </option> 
-                        {% endif %}
-                        {% if instituicao_preenchida == 'CATOLICA' %}
-                          <option selected = "CATOLICA">CATOLICA</option> 
-                        {% endif %}
-                        {% if instituicao_preenchida == 'UNIPLAN' %}
-                          <option selected = "UNIPLAN"> UNIPLAN </option> 
-                        {% endif %}
-                        {% if instituicao_preenchida == 'IESB' %}
-                          <option selected = "IESB"> IESB </option> 
-                        {% endif %}
-                        {% if instituicao_preenchida == 'UDF' %}
-                          <option selected = "UDF"> UDF </option> 
-                        {% endif %}
-                        {% if instituicao_preenchida == 'UPIS' %}
-                          <option selected = "UPIS"> UPIS </option> 
-                        {% endif %}
+                          <option value = "CEUB" {% if instituicao_preenchida == 'CEUB' %} selected {% endif %}> CEUB </option>  
+                          <option value = "UNIEURO" {% if instituicao_preenchida == 'UNIEURO' %} selected {% endif %}> UNIEURO </option>
+                          <option value = "IFB" {% if instituicao_preenchida == 'IFB' %} selected {% endif %}> IFB </option>
+                          <option value = "UNB"{% if instituicao_preenchida == 'UNB' %} selected {% endif %} > UNB </option>
+                          <option value = "CATOLICA" {% if instituicao_preenchida == 'CATOLICA' %} selected {% endif %}> CATOLICA </option>
+                          <option value = "UNIPLAN" {% if instituicao_preenchida == 'UNIPLAN' %} selected {% endif %}> UNIPLAN </option>
+                          <option value = "IESB"{% if instituicao_preenchida == 'IESB' %} selected {% endif %}> IESB </option>
+                          <option value = "UDF" {% if instituicao_preenchida == 'UDF' %} selected {% endif %}> UDF </option>
+                          <option value = "UPIS" {% if instituicao_preenchida == 'UPIS' %} selected {% endif %}> UPIS </option>
                       </select>
                     </div>
 
