@@ -33,7 +33,7 @@
                         <p><strong>Local:</strong> {{ evento.local }}</p>
                         <p><strong>Data:</strong> {{ evento.dataI }} até {{ evento.dataF }}</p>
                         <p><strong>Horário:</strong> {{ evento.horarioI }}h às {{ evento.horarioF }}h</p>
-                        <a href = "{% url 'sair_evento' usuario.id_usuario evento.id_evento %}">sair</a>
+                        <a href = "{% url 'sair_evento' usuario.id_usuario evento.id_evento %}">Sair do evento</a>
                     </div>
                 </div>
 
@@ -45,6 +45,11 @@
     {% else %}
         <p class="meus-eventos-empty">Você ainda não está inscrito em nenhum evento.</p>
     {% endif %}
+</div>
+
+<div class="zero-certificado-ver-eventos">
+    <a href="{% url 'sobre' %}"> SOBRE</a>
+    <a href="{% url 'inscricao' %}"> VER EVENTOS</a>
 </div>
 
 {% endblock %}

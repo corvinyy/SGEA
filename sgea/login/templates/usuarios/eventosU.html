@@ -71,7 +71,13 @@
                             {% else %}
                                 <form method="post" action="{% url 'inscricao_evento' usuario.id_usuario evento.id_evento %}">
                                     {% csrf_token %}
-                                    <button type="submit" class="eventos-inscricao-btn">Inscrever-se</button>
+                                    <button 
+                                        type="submit" 
+                                        class="eventos-inscricao-btn"
+                                        data-vagas="{{ evento.vagas }}"
+                                    >
+                                        Inscrever-se
+                                    </button>
                                 </form>
                             {% endif %}
                         </div>
