@@ -28,6 +28,7 @@ urlpatterns = [
     path("meus_certificados/", views.meus_certificados, name = "meus_certificados"),
     path("editar_usuario/", views.editar_usuario, name="editar_usuario"),
     path("deletar_usuario_adm/<int:usuario_id>/", views.deletar_usuario_adm, name = "deletar_usuario_adm"),
+    path("sair_evento/<int:usuario_id>/<int:evento_id>", views.sair_evento, name="sair_evento"),
     
     #Operações com os eventos
     path("cadastro_eventos/", views.ev, name = 'ev'),

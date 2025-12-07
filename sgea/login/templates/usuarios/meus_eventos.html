@@ -28,13 +28,13 @@
                     </div>
 
                     <div class="meus-eventos-info">
-                        <h3>{{ evento.nome }}</h3>
+                        <h3>{{ evento.nome }} - {{ evento.tipoevento }} </h3>
                         <p><strong>Tipo:</strong> {{ evento.tipoevento }}</p>
                         <p><strong>Local:</strong> {{ evento.local }}</p>
                         <p><strong>Data:</strong> {{ evento.dataI }} até {{ evento.dataF }}</p>
                         <p><strong>Horário:</strong> {{ evento.horarioI }}h às {{ evento.horarioF }}h</p>
+                        <a href = "{% url 'sair_evento' usuario.id_usuario evento.id_evento %}">sair</a>
                     </div>
-
                 </div>
 
             </div>

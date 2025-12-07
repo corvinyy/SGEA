@@ -675,13 +675,15 @@ def inscricao_evento(request, usuario_id, evento_id):
         return redirect("login")
     
     if request.method == "POST":
+        # Adquire o ID do usuário na sessão e o ID do evento selecionado 
         usuario = get_object_or_404(Usuario, id_usuario = usuario_id)
         evento = get_object_or_404(Evento, id_evento = evento_id)
     
+        # Cria uma nova inscrição e registra a inscrição nos logs
         nova_inscricao = Inscrito.objects.create(usuario_id = usuario, evento_id = evento)
-
         Registro.objects.create(usuario_id = nova_inscricao.usuario_id.id_usuario, evento_id = nova_inscricao.evento_id.id_evento, acao = "Inscrição em evento" )
 
+        # Diminui a quantidade de vagas disponíveis
         evento.vagas -= 1
         evento.save()
         
@@ -689,6 +691,30 @@ def inscricao_evento(request, usuario_id, evento_id):
            
     return render(request,"usuarios/meus_eventos.html", {"usuarios": Usuario.objects.all(), "eventos": Evento.objects.all()}) 
 
+def sair_evento(request, usuario_id, evento_id):
+    usuario = request.session.get("usuario_id")
+
+    if not usuario:
+        return redirect("login")
+    
+    if request.method == "GET":    
+        evento = get_object_or_404(Evento, id_evento = evento_id)
+        usuario = get_object_or_404(Usuario, id_usuario = usuario_id)
+
+        if not Inscrito.objects.filter(usuario_id_id = usuario.id_usuario).exists():
+            return HttpResponse('Usuário não está inscrito neste evento.')
+
+        if not Inscrito.objects.filter(evento_id_id = evento.id_evento).exists():
+            return HttpResponse('Evento não existe.')
+                
+        if Inscrito.objects.filter(evento_id_id = evento.id_evento, usuario_id_id = usuario.id_usuario):
+            Inscrito.objects.filter(evento_id_id = evento.id_evento, usuario_id_id = usuario.id_usuario).delete()
+            
+            evento.vagas += 1
+            evento.save()
+            
+            return redirect("meus_eventos")
+            
 def usuario_eventos(request):
     usuario_id = request.session.get("usuario_id")
 
