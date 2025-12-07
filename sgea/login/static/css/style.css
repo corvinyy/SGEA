@@ -1696,6 +1696,31 @@ nav a.ativo {
     margin: 4px 0;
 }
 
+.meus-eventos-info a {
+    display: inline-block;
+
+    margin-top: 10px;
+    padding: 5px 20px;
+
+    font-weight: bold;
+    text-decoration: none;
+
+    background-color: var(--botao-emerg-color);
+    color: var(--tertiary-color);
+    border-radius: 10px;
+
+    transform: scale(1);
+    transition: background-color 0.1s ease, transform 1s ease;
+    
+}
+
+.meus-eventos-info a:hover {
+    background-color: var(--botao-preto-color);
+    color: white;
+    transform: scale(1.1);
+
+}
+
 .meus-eventos-empty {
     color: white;
     text-align: center;
