@@ -98,5 +98,18 @@
             <img src="{% static 'assets/logos/atena_logo.png' %}" alt="Logo Atena" class="logo_atena" width="120px">
         </div>
     </footer>
+
+    <script>
+        {% if toast_message %}
+            Toastify({
+                text: "{{ toast_message }}",
+                duration: 3000,
+                style: {
+                    background: "{% if toast_type == 'error' %}linear-gradient(to top, #d83745ff, #b61919ff){% else %}linear-gradient(to top, #2ec03aff, #157933ff){% endif %}",
+                    boxShadow: "none"
+                }
+            }).showToast();
+        {% endif %}
+    </script>
 </body>
 </html>
