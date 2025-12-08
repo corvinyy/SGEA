@@ -41,7 +41,9 @@
                 </li>
                 {% if usuario.tipo == "organizador" %}
                 <li>
-                    <a href="{% url 'ver_certs' %}">Emissão</a>
+                    <a href="{% url 'ver_certs' %}"
+                        class="{% if 'certificados' in request.path %}ativo{% endif %}">Emissão
+                    </a>
                 </li>
                 {% endif %}
             </ul>

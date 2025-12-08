@@ -6,6 +6,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
+from django.contrib.auth.hashers import check_password 
 from datetime import date, datetime
 from decimal import Decimal
 from django.core.mail import EmailMessage
@@ -51,12 +52,17 @@ def deletar_usuario(request):
 
     # Caso o método de acesso da página seja um POST, ele irá adquirir os dados do usuário e requerir uma senha, se a senha inserida for igual 
     # a senha anterior o perfil será deletado
+
     if request.method == "POST":
         usuario = get_object_or_404(Usuario, id_usuario = usuario_id)
-        
         senha = request.POST.get("senha")
-        if usuario.senha != senha:
-            return HttpResponse("Senha incorreta. Exclusão interrompida.")
+
+        if not check_password(senha, usuario.password):
+            return render(request, 'usuarios/deletar_usuario.html', {
+                "usuario" : usuario,
+                "toast_message": "Senha incorreta. Exclusão interrompida",
+                "toast_type": "error",
+            })
         
         # Adquire as informações, as registra e então deleta o usuário
         Registro.objects.create(usuario_id = usuario_id, acao = "Exclusão de usuário")
@@ -316,12 +322,22 @@ def editar_usuario(request):
         telefone_arrumado = (f"({telefone[0:2]}) {telefone[2:7]}-{telefone[7:11]}")
         
         if Usuario.objects.filter(telefone = telefone_arrumado).exclude(id_usuario = usuario_id):
-            messages.error(request, "Este telefone já foi cadastrado.")
-            return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+            return render(request, 'usuarios/editar_usuario.html',
+                {
+                    "usuario": usuario,              
+                    "toast_message": "Este telefone já foi cadastrado.",
+                    "toast_type": "error",
+                }
+            )
         
         if len(senha) < 8:
-            messages.error(request, "A senha deve possuir ao no mínimo 8 dígitos.")
-            return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+            return render(request, 'usuarios/editar_usuario.html',
+                {
+                    "usuario": usuario,              
+                    "toast_message": "As senha deve possuir 8 ou mais dígitos",
+                    "toast_type": "error",
+                }
+            )
         else:
             carac_especial = "@#$!%^&*()-+?_=,<>/\|."
             numeros = "0123456789"
@@ -329,11 +345,21 @@ def editar_usuario(request):
                 if any(c in numeros for c in senha):
                     pass
                 else:
-                    messages.error(request, "A senha deve possuir ao menos um número.")
-                    return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+                    return render(request, 'usuarios/editar_usuario.html',
+                        {
+                            "usuario": usuario,              
+                            "toast_message": "A senha deve possuir ao menos um número.",
+                            "toast_type": "error",
+                        }
+                    )
             else:
-                messages.error(request, "A senha deve possuir ao menos um caracter especial.")
-                return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+                return render(request, 'usuarios/editar_usuario.html',
+                    {
+                        "usuario": usuario,              
+                        "toast_message": "A senha deve possuir ao menos um caracter especial.",
+                        "toast_type": "error",
+                    }
+                )
 
         tamanho = len(telefone)
         
@@ -343,8 +369,14 @@ def editar_usuario(request):
             telefone_d = (usuario.telefone)
             telefone_desarrumado = f"{telefone_d[1]}{telefone_d[2]}{telefone_d[5:10]}{telefone_d[11:]}"
             usuario.telefone = telefone_desarrumado
-            messages.error(request, "O número deve ser inserido no seguinte formato: '9999999999999'.")
-            return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+
+            return render(request, 'usuarios/editar_usuario.html',
+                {
+                    "usuario": usuario,              
+                    "toast_message": "O número deve ser inserido no seguinte formato: 9999999999999.",
+                    "toast_type": "error",
+                }
+            )
         
         Registro.objects.create(usuario_id = usuario_id, acao = "Edição de perfil")
         
@@ -509,29 +541,53 @@ def eventos(request):
                 
             # Verifica se os horários estão entre horários existentes (entre 0 ou 24 horas)
             if horario_final <= horario_inicio:
-                return HttpResponse("O horário final não pode ser anterior ao inicial.")
+                return render(request, 'usuarios/eventos.html', {
+                    **dados_preenchidos,
+                    "toast_message": "O horário final não pode ser anterior ao inicial.",
+                    "toast_type": "error",
+                })
             
             # Verifica se a informação adquirida é um número inteiro
             try:
                 vagasInt = int(vagas_str)
             except ValueError:
-                return HttpResponse("O valor das vagas deve ser um número inteiro positivo")
+                return render(request, 'usuarios/eventos.html', {
+                    **dados_preenchidos,
+                    "toast_message": "O valor das vagas deve ser um número inteiro positivo",
+                    "toast_type": "error",
+                })
             
             try:
                 quantParticipantesInt = int(quantParticipantes_str)
             except ValueError:
-                return HttpResponse("O valor da quantidade de participantes deve ser um valor inteiro positivo")
+                return render(request, 'usuarios/eventos.html', {
+                    **dados_preenchidos,
+                    "toast_message": "O valor da quantidade de participantes deve ser um valor inteiro positivo",
+                    "toast_type": "error",
+                })
             
             # Verifica se há uma quantidade maior de vagas do que de participantes
             if vagasInt > quantParticipantesInt:
-                return HttpResponse("Não pode haver um número maior de vagas do que de participantes")
+                return render(request, 'usuarios/eventos.html', {
+                    **dados_preenchidos,
+                    "toast_message": "Não pode haver um número maior de vagas do que de participantes",
+                    "toast_type": "error",
+                })
             
             # Verifica se os valores são positivos
             if quantParticipantesInt < 0:
-                return HttpResponse("Não pode haver uma quantidade negativa de participantes")
+                return render(request, 'usuarios/eventos.html', {
+                    **dados_preenchidos,
+                    "toast_message": "Não pode haver uma quantidade negativa de participantes",
+                    "toast_type": "error",
+                })
             
             if vagasInt < 0:
-                return HttpResponse("Não pode haver uma quantidade negativa de vagas")
+                return render(request, 'usuarios/eventos.html', {
+                    **dados_preenchidos,
+                    "toast_message": "O valor das vagas deve ser um número inteiro positivo",
+                    "toast_type": "error",
+                })
             
             
 

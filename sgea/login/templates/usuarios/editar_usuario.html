@@ -56,5 +56,11 @@
     
     </div>
 </form>
+{% if toast_msg %}
+    <script>
+        window.toastMessage = "{{ toast_msg|escapejs }}";
+        window.toastBackground = "{{ toast_bg|escapejs }}";
+    </script>
+{% endif %}
 
 {% endblock %}
