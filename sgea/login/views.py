@@ -104,13 +104,19 @@ def cadastro_usuarios(request):
         telefone_arrumado = (f"({telefone[0:2]}) {telefone[2:7]}-{telefone[7:11]}")
 
         if not confirmar_senha == senha:
-            messages.error(request, "As senhas são diferentes.")
-            return render(request, 'usuarios/home.html', dados_preenchidos)
+            return render(request, 'usuarios/home.html', {
+                **dados_preenchidos,
+                "toast_message": "As senhas são diferentes.",
+                "toast_type": "error",
+            })
 
         if len(senha) < 8:
             print(dados_preenchidos)
-            messages.error(request, "A senha deve possuir mais de 8 dígitos.")
-            return render(request, 'usuarios/home.html', dados_preenchidos)
+            return render(request, 'usuarios/home.html', {
+                **dados_preenchidos,
+                "toast_message": "As senha deve possuir 8 ou mais dígitos",
+                "toast_type": "error",
+            })
 
         if len(senha) >= 8:
             carac_especial = "@#$!%^&*()-+?_=,<>/\|."
@@ -119,47 +125,75 @@ def cadastro_usuarios(request):
                 if any(c in numeros for c in senha):
                     pass
                 else:
-                    messages.error(request, "A senha deve possuir ao menos um número.")
-                    return render(request, 'usuarios/home.html', dados_preenchidos)
+                    return render(request, 'usuarios/home.html', {
+                        **dados_preenchidos,
+                        "toast_message": "A senha deve possuir pelo menos um número.",
+                        "toast_type": "error",
+                    })
             else:
-                messages.error(request, "A senha deve possuir ao menos um caracter especial.")
-                return render(request, 'usuarios/home.html', dados_preenchidos)
+                return render(request, 'usuarios/home.html', {
+                        **dados_preenchidos,
+                        "toast_message": "A senha deve possuir pelo menos um caractere especial",
+                        "toast_type": "error",
+                    })
         else:
             messages.error(request, "A senha deve possuir no mínimo 8 caracteres.")
-            return render(request, 'usuarios/home.html', dados_preenchidos)
+            return render(request, 'usuarios/home.html', {
+                **dados_preenchidos,
+                "toast_message": "A senha deve possuir pelo menos um número.",
+                 "toast_type": "error",
+            })
 
         # Caso o número inserido não esteja no formato definido, esta mensagem irá aparecer ao usuário
         if not tamanhoT == 11:
-            messages.error(request, "Número inserido de forma inválida, deve seguir o seguinte formato: '99999999999'.")
-            return render(request, 'usuarios/home.html', dados_preenchidos)
+            return render(request, 'usuarios/home.html', {
+                **dados_preenchidos,
+                "toast_message": "Número inserido de forma inválida, deve seguir o seguinte formato: 99999999999.",
+                 "toast_type": "error",
+            })
         try:
             validatorE(email)
         # Caso o email inserido não esteja no formato definido, esta mensagem irá aparecer ao usuário
         except Exception:
-            messages.error(request, "Email inserido de forma inválida, deve seguir o seguinte modelo: 'exemplo@exemplo.com'")
-            return render(request, 'usuarios/home.html', dados_preenchidos)
+            return render(request, 'usuarios/home.html', {
+                **dados_preenchidos,
+                "toast_message": "Email inserido de forma inválida, deve seguir o seguinte modelo: exemplo@exemplo.com",
+                 "toast_type": "error",
+            })
         
         # Caso o telefone já tenha sido utilizado, o sistema impede de criar um novo usuário
         if Usuario.objects.filter(telefone = telefone).exists():
-            messages.error(request, "Este telefone já foi cadastrado.")
-            return render(request, 'usuarios/home.html', dados_preenchidos)
+            return render(request, 'usuarios/home.html', {
+                **dados_preenchidos,
+                "toast_message": "Este telefone já foi cadastrado.",
+                 "toast_type": "error",
+            })
 
         # Se todas as informações são válidas, um novo usuário é criado
         if tipo_usuario == "professor":
             if senha_tipo != SENHAPROF:
-                messages.error(request, "Senha do professor inválida. Cadastro negado.")
-                return render(request, 'usuarios/home.html', dados_preenchidos)
+                return render(request, 'usuarios/home.html', {
+                    **dados_preenchidos,
+                    "toast_message": "Senha do professor inválida. Cadastro negado.",
+                    "toast_type": "error",
+                })
 
                     
         elif tipo_usuario == "organizador":
             if senha_tipo != SENHAORG:
-                messages.error(request, "Senha do organizador inválida. Cadastro negado.")
-                return render(request, 'usuarios/home.html', dados_preenchidos)
+                return render(request, 'usuarios/home.html', {
+                    **dados_preenchidos,
+                    "toast_message": "Senha do organizador inválida. Cadastro negado.",
+                    "toast_type": "error",
+                })
 
         
         if Usuario.objects.filter(email = email).exists():
-            messages.error(request, "Este email já foi cadastrado.")
-            return render(request, 'usuarios/home.html', dados_preenchidos)
+            return render(request, 'usuarios/home.html', {
+                **dados_preenchidos,
+                "toast_message": "Este email já foi cadastrado.",
+                 "toast_type": "error",
+            })
 
         
         # Gerador de código que escolhe entre 10 números aleatórios e 26 letras aleatórias
@@ -248,12 +282,18 @@ def loginU(request):
         else:
             try:
                 Usuario.objects.get(email=email)
-                messages.error(request, 'Usuário ou senha incorreta.')
-                return render(request, 'usuarios/login.html', dados_preenchidos)
+                return render(request, 'usuarios/login.html', {
+                    **dados_preenchidos,
+                    "toast_message": "Usuário ou senha incorreta.",
+                    "toast_type": "error",
+                })
                 
             except Usuario.DoesNotExist:
-                messages.error(request, 'Usuário não encontrado.')
-                return render(request, 'usuarios/login.html', dados_preenchidos) 
+                return render(request, 'usuarios/login.html', {
+                    **dados_preenchidos,
+                    "toast_message": "Usuário não encontrado.",
+                    "toast_type": "error",
+                })
         
     return render(request, "usuarios/login.html")
 
@@ -447,8 +487,11 @@ def eventos(request):
             #data_hj = timezone.now().date()
     
             if dia_fim < dia_inicio:
-                messages.error(request, 'A data final não pode ser anterior à data inicial.')
-                return render(request, 'usuarios/eventos.html', dados_preenchidos)
+                return render(request, 'usuarios/eventos.html', {
+                    **dados_preenchidos,
+                    "toast_message": "A data final não pode ser anterior à data inicial.",
+                    "toast_type": "error",
+                })
 
             #if dia_inicio < data_hj:
                 return HttpResponse("A data de início não pode ser anterior à data atual.")

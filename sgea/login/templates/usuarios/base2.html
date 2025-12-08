@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>{% block title %}Header 2{% endblock %}</title>
-    <link rel="icon" type="image/png" href="{% static 'assets/logos/logo-site.png' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
 </head>
 <body>
@@ -22,6 +22,7 @@
         {% block content %}{% endblock %}
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="{% static 'js/script.js' %}"></script>
 
     <footer id="footer-container">
@@ -41,5 +42,18 @@
             <img src="{% static 'assets/logos/atena_logo.png' %}" alt="Logo Atena" class="logo_atena" width="120px">
         </div>
     </footer>
+
+    <script>
+        {% if toast_message %}
+            Toastify({
+                text: "{{ toast_message }}",
+                duration: 3000,
+                style: {
+                    background: "{% if toast_type == 'error' %}linear-gradient(to top, #d83745ff, #b61919ff){% else %}linear-gradient(to top, #2ec03aff, #157933ff){% endif %}",
+                    boxShadow: "none"
+                }
+            }).showToast();
+        {% endif %}
+    </script>
 </body>
 </html>
