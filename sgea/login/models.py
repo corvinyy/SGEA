@@ -40,7 +40,7 @@ class Evento(models.Model):
     organResp = models.CharField(max_length=300, null=False)
     vagas = models.IntegerField()
     emitido = models.BooleanField(default = False)
-    assinatura = models.TextField(max_length = 255, null = False)
+    assinatura = models.TextField(max_length = 255, null = True)
     horas = models.DecimalField(decimal_places = 2, max_digits = 5, null = True, blank = True)
     descricao = models.TextField(max_length = 999, null = False)
     imagem = models.ImageField(upload_to = 'eventos/imagens/', blank = True, null = True)

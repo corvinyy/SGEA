@@ -125,7 +125,7 @@ def cadastro_usuarios(request):
                 messages.error(request, "A senha deve possuir ao menos um caracter especial.")
                 return render(request, 'usuarios/home.html', dados_preenchidos)
         else:
-            messages.error(request, "A senha deve possuir ao menos um número.")
+            messages.error(request, "A senha deve possuir no mínimo 8 caracteres.")
             return render(request, 'usuarios/home.html', dados_preenchidos)
 
         # Caso o número inserido não esteja no formato definido, esta mensagem irá aparecer ao usuário
@@ -271,19 +271,43 @@ def editar_usuario(request):
         sobrenome = request.POST.get("sobrenome")
         telefone = request.POST.get("telefone")
         
-        if Usuario.objects.filter(telefone = telefone).exclude(id_usuario = usuario_id).exists():
-            return HttpResponse("Este telefone já está cadastrado por outro usuário")
+        telefone_d = (usuario.telefone)
+        telefone_desarrumado = f"{telefone_d[1]}{telefone_d[2]}{telefone_d[5:10]}{telefone_d[11:]}"
+        usuario.telefone = telefone_desarrumado
+        telefone_arrumado = (f"({telefone[0:2]}) {telefone[2:7]}-{telefone[7:11]}")
         
+        if Usuario.objects.filter(telefone = telefone_arrumado).exclude(id_usuario = usuario_id):
+            messages.error(request, "Este telefone já foi cadastrado.")
+            return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+        
+        if len(senha) < 8:
+            messages.error(request, "A senha deve possuir ao no mínimo 8 dígitos.")
+            return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+        else:
+            carac_especial = "@#$!%^&*()-+?_=,<>/\|."
+            numeros = "0123456789"
+            if any(c in carac_especial for c in senha):
+                if any(c in numeros for c in senha):
+                    pass
+                else:
+                    messages.error(request, "A senha deve possuir ao menos um número.")
+                    return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+            else:
+                messages.error(request, "A senha deve possuir ao menos um caracter especial.")
+                return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
+
         tamanho = len(telefone)
         
         if tamanho == 11:
             pass
         else:
-            return HttpResponse("O número deve ser inserido no seguinte formato: '9999999999999'.")
+            telefone_d = (usuario.telefone)
+            telefone_desarrumado = f"{telefone_d[1]}{telefone_d[2]}{telefone_d[5:10]}{telefone_d[11:]}"
+            usuario.telefone = telefone_desarrumado
+            messages.error(request, "O número deve ser inserido no seguinte formato: '9999999999999'.")
+            return render(request, 'usuarios/editar_usuario.html', {"usuario" : usuario})
         
         Registro.objects.create(usuario_id = usuario_id, acao = "Edição de perfil")
-        
-        telefone_arrumado = (f"({telefone[0:2]}) {telefone[2:7]}-{telefone[7:11]}")
         
         # Caso as informações sejam inseridas corretamente, as mudanças são salvas
         usuario.nome = nome
@@ -388,6 +412,8 @@ def eventos(request):
             
             imagem = request.FILES.get("imagem")
 
+            profs = Usuario.objects.filter(tipo = 'professor')
+
             dados_preenchidos = {
                 'nomep' : request.POST.get('nome'),
                 'tipoeventop' : request.POST.get('tipoE'),
@@ -402,7 +428,8 @@ def eventos(request):
                 'assinaturap' : request.POST.get('assinatura'),
                 'horasp' : request.POST.get('horas'),
                 'imagemp' : request.POST.get('imagem'),
-                'descricaop' : request.POST.get('descricao')
+                'descricaop' : request.POST.get('descricao'),
+                'profs' : profs 
             }
 
             # Verifica se os espaços dos dias não estão vazios
@@ -577,7 +604,7 @@ def editar_evento(request, pk):
         descricao = request.POST.get("descricao")
         
         try:
-            if nome and tipoevento and dataI_str and dataF_str and horarioI_str and horarioF_str and local and quantPart_str and organResp and vagas_str and assinatura and descricao:
+            if nome and tipoevento and dataI_str and dataF_str and horarioI_str and horarioF_str and local and quantPart_str and organResp and vagas_str and descricao:
                 dataI = datetime.strptime(dataI_str, "%Y-%m-%d").date()
                 dataF = datetime.strptime(dataF_str, "%Y-%m-%d").date()
                 vagas = int(vagas_str)
@@ -624,6 +651,12 @@ def editar_evento(request, pk):
             
                 Registro.objects.create(evento_id = pk, acao = "Edição de evento")
             
+                if not assinatura:
+                    evento.assinatura = organResp
+                
+                else:
+                    evento.assinatura = assinatura
+                    
                 evento.nome = nome
                 evento.tipoevento = tipoevento
                 evento.dataI = dataI
@@ -635,7 +668,6 @@ def editar_evento(request, pk):
                 evento.organResp = organResp
                 evento.vagas = vagas
                 evento.horas = horas
-                evento.assinatura = assinatura 
                 evento.descricao = descricao
                 evento.save()
 
@@ -709,7 +741,8 @@ def sair_evento(request, usuario_id, evento_id):
                 
         if Inscrito.objects.filter(evento_id_id = evento.id_evento, usuario_id_id = usuario.id_usuario):
             Inscrito.objects.filter(evento_id_id = evento.id_evento, usuario_id_id = usuario.id_usuario).delete()
-            
+            Registro.objects.create(usuario_id = usuario.id_usuario, evento_id = evento.id_evento, acao = "Saída de evento")
+
             evento.vagas += 1
             evento.save()
             
@@ -762,7 +795,7 @@ def emitir_certificados(request):
                     if not inscricoes.exists():
                         ev.emitido = True
                         ev.save()
-                        messages.warning(request, f"AVISO: Evento: {ev.nome} finalizado (sem inscrições).")
+                        messages.warning(request, f"AVISO!! Evento: {ev.nome} finalizado (sem inscrições).")
                         continue
                     
                     messages.info(request, "Seguintes eventos foram finalizados: ")

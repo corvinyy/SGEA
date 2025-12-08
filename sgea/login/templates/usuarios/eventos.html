@@ -49,12 +49,12 @@
           <div class="form-linha">
             <div class="form-grupo">
               <label>Data de Início</label>
-              <input name = "dataI" class = "form-control-sm" value='{{ dataIp|default:"" }}' type = "date" autocomplete="off" placeholder="dd/mm/YYYY" " required>
+              <input name = "dataI" class = "form-control-sm" value='{{ dataIp|default:"" }}' type = "date" autocomplete="off" min="{% now 'Y-m-d' %}" placeholder="dd/mm/YYYY" " required>
             </div>
 
             <div class="form-grupo">
               <label>Data de término</label>
-              <input name = "dataF" class = "form-control-sm" type = "date" autocomplete="off" placeholder="dd/mm/YYYY"" required>
+              <input name = "dataF" class = "form-control-sm" type = "date" autocomplete="off" min="{% now 'Y-m-d' %}" placeholder="dd/mm/YYYY"" required>
             </div>
 
             <div class="form-grupo">
@@ -62,7 +62,9 @@
                 <select name="profOrg" id="profOrg" class = "form control-sm" required style="width: 220px">
                   <option value="" disabled selected hidden style='display : none'>Selecione</option>
                     {% for pf in profs %} 
-                      <option value="{{ pf.id_usuario }}"> {{ pf.nome }} {{ pf.sobrenome }} </option> 
+                      <option value="{{ pf.id_usuario }}" 
+                      {% if organRespp|safe == pf.id_usuario|safe %}selected{% endif %}> {{ pf.nome }} {{ pf.sobrenome }} 
+                      </option> 
                     {% endfor %}
                 </select> 
             </div>
@@ -98,7 +100,7 @@
           
             <div class="form-grupo">  
               <label>Assinatura</label>
-              <input name="assinatura" class = "form-control-sm" value="{{ assinaturap|default:'' }}"  type = "text" autocomplete="off" placeholder="" required> 
+              <input name="assinatura" class = "form-control-sm" value="{{ assinaturap|default:'' }}"  type = "text" autocomplete="off" placeholder=""> 
             </div>
           </div>
           
