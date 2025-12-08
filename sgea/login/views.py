@@ -137,10 +137,9 @@ def cadastro_usuarios(request):
                         "toast_type": "error",
                     })
         else:
-            messages.error(request, "A senha deve possuir no mínimo 8 caracteres.")
             return render(request, 'usuarios/home.html', {
                 **dados_preenchidos,
-                "toast_message": "A senha deve possuir pelo menos um número.",
+                "toast_message": "A senha deve possuir no mínimo 8 caracteres.",
                  "toast_type": "error",
             })
 
@@ -148,7 +147,7 @@ def cadastro_usuarios(request):
         if not tamanhoT == 11:
             return render(request, 'usuarios/home.html', {
                 **dados_preenchidos,
-                "toast_message": "Número inserido de forma inválida, deve seguir o seguinte formato: 99999999999.",
+                "toast_message": "Número inserido de forma inválida, deve seguir o seguinte formato: '99999999999'.",
                  "toast_type": "error",
             })
         try:
@@ -382,7 +381,7 @@ def todos_eventos(request):
         return redirect("inscricao")
     
     eventos = {
-        "eventos" : Evento.objects.all()
+        "eventos" : Evento.objects.all().order_by('emitido')
     }
     
     return render(request, "usuarios/visu_eventos.html", eventos)

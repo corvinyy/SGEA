@@ -26,6 +26,7 @@
                 <th>Tipo</th>
                 <th>Data de início</th>
                 <th>Data de término</th>
+                <th>Emitido</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -37,6 +38,7 @@
                 <td>{{evento.tipoevento}}</td>
                 <td>{{evento.dataI}}</td>
                 <td>{{evento.dataF}}</td>
+                <td>{{evento.emitido | yesno:"Sim,Não"}}</td>
                 <td>
                     <button class="botao-detalhe-tabela-evento" data-evento-id="{{evento.id_evento}}">Ver detalhes</button>
                 </td>
